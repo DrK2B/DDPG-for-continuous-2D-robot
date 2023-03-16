@@ -5,10 +5,10 @@ from keras.layers import Dense
 
 
 class CriticNetwork(keras.Model):
-    def __int__(self, layer1_size=512, layer2_size=512,
+    def __int__(self, layer1_size, layer2_size,
                 name='critic', chkpt_dir='tmp/model_weights'):
         super().__init__()
-        self.model_name = name  # distinguish between target and main networks
+        self.model_name = name  # in order to distinguish between target and main networks
         self.checkpoint_dir = chkpt_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir,
                                             self.model_name+'_ddpg.h5')
@@ -27,7 +27,7 @@ class CriticNetwork(keras.Model):
 
 
 class ActorNetwork(keras.Model):
-    def __init__(self, layer1_size=512, layer2_size=512, action_dim=2,
+    def __init__(self, layer1_size, layer2_size, action_dim=2,
                  act_bound=1, name='actor', chkpt_dir='tmp/model_weights'):
         super().__init__()
         self.model_name = name

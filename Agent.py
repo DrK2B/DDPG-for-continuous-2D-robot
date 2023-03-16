@@ -23,16 +23,11 @@ class DDPG_Agent:
         self.min_action = env.action_space.low[0]
         self.action_bound = np.max(np.abs([self.min_action, self.max_action]))
 
-        self.actor = ActorNetwork(action_dim=action_dim, name='actor',
-                                  layer1_size=layer1_size,
-                                  layer2_size=layer2_size,
-                                  act_bound=self.action_bound)
-        self.target_actor = ActorNetwork(action_dim=action_dim,
-                                         name='target_actor',
-                                         layer1_size=layer1_size,
-                                         layer2_size=layer2_size,
-                                         act_bound=self.action_bound)
-        self.critic = CriticNetwork(name='actor', layer1_size=layer1_size,
+        self.actor = ActorNetwork(layer1_size=layer1_size, layer2_size=layer2_size, action_dim=action_dim,
+                                  act_bound=self.action_bound, name='actor')
+        self.target_actor = ActorNetwork(layer1_size=layer1_size, layer2_size=layer2_size, action_dim=action_dim,
+                                         act_bound=self.action_bound, name='target_actor')
+        self.critic = CriticNetwork(name='critic', layer1_size=layer1_size,
                                     layer2_size=layer2_size)
         self.target_critic = CriticNetwork(name='target_critic',
                                            layer1_size=layer1_size,
@@ -124,13 +119,12 @@ class DDPG_Agent:
 
         with tf.GradientTape() as tape:
             policy_actions = self.actor(states)
-            # loss function of actor corresponds to negative of q value function
             # q value function has to be maximized, hence its negative has to minimized
+            # loss function of actor corresponds to negative of q value function
             actor_loss = -self.critic(states, policy_actions)
             actor_loss = tf.math.reduce_mean(actor_loss)
 
-        actor_network_grad = tape.gradient((actor_loss,
-                                            self.actor.trainable_variables))
+        actor_network_grad = tape.gradient(actor_loss, self.actor.trainable_variables)
         self.actor.optimizer.apply_gradients(
             zip(actor_network_grad, self.actor.trainable_variables))
 

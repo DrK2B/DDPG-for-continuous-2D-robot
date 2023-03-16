@@ -19,7 +19,7 @@ def DDPG():
     EPISODES = 500
     TIME_STEPS = 250
     EVALUATE = False
-    EXPLORATION_TIME = 50
+    EXPLORATIONS = 50   # number of episodes with (random) exploration only
 
     # the following hyperparameters are optional inputs to agent object
     # LR_ACTOR
@@ -46,7 +46,7 @@ def DDPG():
         state = env.reset()
         score = 0
         xp_boost = True \
-            if (episode < EXPLORATION_TIME and not EVALUATE) else False
+            if (episode < EXPLORATIONS and not EVALUATE) else False
 
         for time in range(TIME_STEPS):
             env.render()
