@@ -36,7 +36,7 @@ class ActorNetwork(keras.Model):
                                             self.model_name+'_ddpg.h5')
 
         self.action_dim = action_dim
-        self.action_bound = act_bound   # ToDo: ggf. löschen
+        self.action_bound = act_bound
 
         self.layer1_size = layer1_size
         self.layer2_size = layer2_size

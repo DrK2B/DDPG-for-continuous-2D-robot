@@ -18,14 +18,16 @@ class DDPG_Agent:
         self.noise = noise
         self.max_action = env.action_space.high[0]
         self.min_action = env.action_space.low[0]
-
+        action_bound = np.max(np.abs([self.min_action, self.max_action]))
         self.actor = ActorNetwork(action_dim=action_dim, name='actor',
                                   layer1_size=layer1_size,
-                                  layer2_size=layer2_size)
+                                  layer2_size=layer2_size,
+                                  act_bound=action_bound)
         self.target_actor = ActorNetwork(action_dim=action_dim,
                                          name='target_actor',
                                          layer1_size=layer1_size,
-                                         layer2_size=layer2_size)
+                                         layer2_size=layer2_size,
+                                         act_bound=action_bound)
         self.critic = CriticNetwork(name='actor', layer1_size=layer1_size,
                                     layer2_size=layer2_size)
         self.target_critic = CriticNetwork(name='target_critic',
@@ -39,7 +41,7 @@ class DDPG_Agent:
 
         self.update_network_parameters(polyak=1)
 
-    # Performs soft update on the target networks
+    # Performs soft update on the target networks with update rate polyak
     def update_network_parameters(self, polyak=None):
         if polyak is None:
             polyak = self.polyak
