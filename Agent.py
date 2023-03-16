@@ -7,8 +7,8 @@ from ActorCritic import ActorNetwork, CriticNetwork
 
 
 class DDPG_Agent:
-    def __int__(self, state_dim, lr_actor=0.001, lr_critic=0.002, env=None,
-                discount_factor=0.99, action_dim=2, mem_size=1e6, polyak=0.005,
+    def __int__(self, state_dim, action_dim, lr_actor=0.001, lr_critic=0.002, env=None,
+                discount_factor=0.99, mem_size=1e6, polyak=0.005,
                 layer1_size=400, layer2_size=300, batch_size=64, noise=0.1):
         self.discount_factor = discount_factor
         self.polyak = polyak

@@ -34,5 +34,3 @@ class ReplayMemory:
         dones = self.done_memory[batch]
 
         return states, actions, rewards, new_states, dones
-
-

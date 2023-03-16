@@ -6,18 +6,33 @@ from utils import plot_learning_curve
 
 def DDPG():
     env = gym.make('MountainCarContinuous-v0', render_mode='human')
-    agent = DDPG_Agent(state_dim=env.observation_space.shape, env=env,
-                       action_dim=env.action_space.shape[0])
+
+    # agent = DDPG_Agent(env.observation_space.shape, env=env,
+    #                   action_dim=env.action_space.shape[0])
+    agent = DDPG_Agent(env.observation_space.shape[0], env.action_space.shape[0],
+                       env=env)
 
     figure_filename = 'MountainCarContinuous-v0_01.png'
 
-    best_score = env.reward_range[1]    # initialize with worst reward value
+    best_score = env.reward_range[1]  # initialize with worst reward value
     score_history = []
 
+    # Hyperparameters
     EPISODES = 500
     TIME_STEPS = 250
     EVALUATE = False
     EXPLORATION_TIME = 50
+
+    # the following hyperparameters are optional inputs to agent object
+    # LR_ACTOR
+    # LR_CRITIC
+    # DISCOUNT_FACTOR
+    # MEM_SIZE
+    # POLYAK
+    # BATCH_SIZE
+    # NOISE aka std dev (zero-mean gaussian)
+    # LAYER1_SIZE
+    # LAYER2_SIZE
 
     if EVALUATE:
         for n in range(agent.batch_size):
@@ -31,12 +46,13 @@ def DDPG():
 
     for episode in range(EPISODES):
         state = env.reset()
-        done = False
         score = 0
         xp_boost = True \
             if (episode < EXPLORATION_TIME and not EVALUATE) else False
 
         for time in range(TIME_STEPS):
+            env.render()
+
             action = agent.choose_action(state, EVALUATE, xp_boost)
             new_state, reward, done, truncated, info = env.step(action)
             agent.remember(state, action, reward, new_state, done)
@@ -57,13 +73,12 @@ def DDPG():
         print('episode')
         print("Completed in {} steps.... episode: {}/{}, episode reward: {},"
               " average episode reward"
-              .format(time, episode+1, EPISODES, score, avg_score))
+              .format(time, episode + 1, EPISODES, score, avg_score))
 
     if not EVALUATE:
-        episode_idx = [episode+1 for episode in range(EPISODES)]
+        episode_idx = [episode + 1 for episode in range(EPISODES)]
         plot_learning_curve(episode_idx, score_history, figure_filename)
 
 
 if __name__ == '__main__':
     DDPG()
-
