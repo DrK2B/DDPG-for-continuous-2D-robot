@@ -5,6 +5,7 @@ class ReplayMemory:
     def __int__(self, mem_size, state_dim, action_dim):  # action_dim: number of components to the action vector
         self.mem_size = mem_size
         self.mem_cntr = 0
+
         self.state_memory = np.zeros((self.mem_size, *state_dim))
         self.action_memory = np.zeros((self.mem_size, action_dim))
         self.reward_memory = np.zeros(self.mem_size)
