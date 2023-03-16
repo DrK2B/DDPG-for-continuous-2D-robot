@@ -4,9 +4,9 @@ from tensorflow import keras
 from keras.layers import Dense
 
 
-class CritcNetwork(keras.Model):
+class CriticNetwork(keras.Model):
     def __int__(self, layer1_size=512, layer2_size=512,
-                name='critic', chkpt_dir='tmp/ddpg'):
+                name='critic', chkpt_dir='tmp/model_weights'):
         super().__init__()
         self.model_name = name  # distinguish between target and main networks
         self.checkpoint_dir = chkpt_dir
@@ -28,7 +28,7 @@ class CritcNetwork(keras.Model):
 
 class ActorNetwork(keras.Model):
     def __init__(self, layer1_size=512, layer2_size=512, action_dim=2,
-                 act_bound=1, name='actor', chkpt_dir='tmp/ddpg'):
+                 act_bound=1, name='actor', chkpt_dir='tmp/model_weights'):
         super().__init__()
         self.model_name = name
         self.checkpoint_dir = chkpt_dir
@@ -36,7 +36,7 @@ class ActorNetwork(keras.Model):
                                             self.model_name+'_ddpg.h5')
 
         self.action_dim = action_dim
-        self.action_bound = act_bound
+        self.action_bound = act_bound   # ToDo: ggf. löschen
 
         self.layer1_size = layer1_size
         self.layer2_size = layer2_size

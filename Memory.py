@@ -2,13 +2,13 @@ import numpy as np
 
 
 class ReplayMemory:
-    def __int__(self, mem_size, state_shape, num_actions):  # action_dim: number of components to the action vector
+    def __int__(self, mem_size, state_dim, num_actions):  # action_dim: number of components to the action vector
         self.mem_size = mem_size
         self.mem_cntr = 0
-        self.state_memory = np.zeros((self.mem_size, *state_shape))
+        self.state_memory = np.zeros((self.mem_size, *state_dim))
         self.action_memory = np.zeros((self.mem_size, num_actions))
         self.reward_memory = np.zeros(self.mem_size)
-        self.new_state_memory = np.zeros((self.mem_size, *state_shape))
+        self.new_state_memory = np.zeros((self.mem_size, *state_dim))
         self.done_memory = np.zeros(self.mem_size, dtype=np.bool)
 
     def store_transition(self, state, action, reward, new_state, done):
