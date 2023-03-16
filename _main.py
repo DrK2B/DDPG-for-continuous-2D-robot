@@ -1,8 +1,7 @@
-# This is a sample Python script.
-
-# Press Maj+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
+import gym
+import numpy as np
+from Agent import DDPG_Agent
+from utils import plot_learning_curve
 
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
