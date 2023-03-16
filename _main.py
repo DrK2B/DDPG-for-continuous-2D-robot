@@ -7,8 +7,6 @@ from utils import plot_learning_curve
 def DDPG():
     env = gym.make('MountainCarContinuous-v0', render_mode='human')
 
-    # agent = DDPG_Agent(env.observation_space.shape, env=env,
-    #                   action_dim=env.action_space.shape[0])
     agent = DDPG_Agent(env.observation_space.shape[0], env.action_space.shape[0],
                        env=env)
 
