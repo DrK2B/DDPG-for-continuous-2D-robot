@@ -19,11 +19,18 @@ class DDPG_Agent:
         self.max_action = env.action_space.high[0]
         self.min_action = env.action_space.low[0]
 
-        self.actor = ActorNetwork(action_dim=action_dim, name='actor')  # ToDo: add layer_sizes as parameter
+        self.actor = ActorNetwork(action_dim=action_dim, name='actor',
+                                  layer1_size=layer1_size,
+                                  layer2_size=layer2_size)
         self.target_actor = ActorNetwork(action_dim=action_dim,
-                                         name='target_actor')  # ToDo: look above
-        self.critic = CriticNetwork(name='actor')  # ToDo: add layer_sizes as parameter
-        self.target_critic = CriticNetwork(name='target_critic')  # ToDo: look above
+                                         name='target_actor',
+                                         layer1_size=layer1_size,
+                                         layer2_size=layer2_size)
+        self.critic = CriticNetwork(name='actor', layer1_size=layer1_size,
+                                    layer2_size=layer2_size)
+        self.target_critic = CriticNetwork(name='target_critic',
+                                           layer1_size=layer1_size,
+                                           layer2_size=layer2_size)
 
         self.actor.compile(optimizer=Adam(learning_rate=lr_actor))
         self.target_actor.compile(optimizer=Adam(learning_rate=lr_actor))
@@ -67,15 +74,13 @@ class DDPG_Agent:
         self.critic.load_weights(self.critic.checkpoint_file)
         self.target_critic.load_weights(self.target_critic.checkpoint_file)
 
-    def choose_action(self, observation, evaluate=False, exploration_boost=False):
+    def choose_action(self, state, evaluate=False, exploration_boost=False):
         # at the start of the training, actions are sampled from a uniform random
         # distribution over valid actions for a fixed number of steps (batch size?)
         if exploration_boost:
-            action = tf.random.uniform(shape=[self.action_dim],
-                                       minval=self.min_action,
-                                       maxval=self.max_action)
+            action = tf.convert_to_tensor(self.env.action_space.sample())
         else:
-            state = tf.convert_to_tensor([observation], dtype=tf.float32)
+            state = tf.convert_to_tensor([state], dtype=tf.float32)
             action = self.actor(state)
             if not evaluate:
                 action += tf.random.normal(shape=[self.action_dim], mean=0.0,
