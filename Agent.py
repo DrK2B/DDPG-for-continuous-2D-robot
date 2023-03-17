@@ -7,16 +7,16 @@ from ActorCritic import ActorNetwork, CriticNetwork
 
 
 class ddpgAgent:
-    def __int__(self, state_dim, action_dim, env=None, lr_actor=0.001, lr_critic=0.002,
-                discount_factor=0.99, mem_size=1e6, polyak=0.005,
-                layer1_size=40, layer2_size=30, batch_size=64, noise=0.1):
+    def __init__(self, state_dim, action_dim, env=None, lr_actor=0.001, lr_critic=0.002,
+                 discount_factor=0.99, mem_size=1000000, polyak=0.005,
+                 layer1_size=40, layer2_size=30, batch_size=64, noise=0.1):
         self.discount_factor = discount_factor
         self.polyak = polyak
         self.batch_size = batch_size
         self.action_dim = action_dim
-        self.memory = ReplayMemory(mem_size, state_dim, self.action_dim)
+        self.memory = ReplayMemory(mem_size, state_dim, action_dim)
 
-        self.noise = noise   # standard deviation of zero-mean Gaussian noise
+        self.noise = noise  # standard deviation of zero-mean Gaussian noise
 
         self.env = env
         self.max_action = env.action_space.high[0]
@@ -27,11 +27,9 @@ class ddpgAgent:
                                   act_bound=self.action_bound, name='actor')
         self.target_actor = ActorNetwork(layer1_size=layer1_size, layer2_size=layer2_size, action_dim=action_dim,
                                          act_bound=self.action_bound, name='target_actor')
-        self.critic = CriticNetwork(name='critic', layer1_size=layer1_size,
-                                    layer2_size=layer2_size)
-        self.target_critic = CriticNetwork(name='target_critic',
-                                           layer1_size=layer1_size,
-                                           layer2_size=layer2_size)
+        self.critic = CriticNetwork(layer1_size, layer2_size, name='critic')
+        self.target_critic = CriticNetwork(layer1_size=layer1_size,
+                                           layer2_size=layer2_size, name='target_critic')
 
         self.actor.compile(optimizer=Adam(learning_rate=lr_actor))
         self.target_actor.compile(optimizer=Adam(learning_rate=lr_actor))

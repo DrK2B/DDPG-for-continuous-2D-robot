@@ -2,7 +2,7 @@ import numpy as np
 
 
 class ReplayMemory:
-    def __int__(self, mem_size, state_dim, action_dim):  # action_dim: number of components to the action vector
+    def __init__(self, mem_size, state_dim, action_dim):  # action_dim: number of components to the action vector
         self.mem_size = mem_size
         self.mem_cntr = 0
 
