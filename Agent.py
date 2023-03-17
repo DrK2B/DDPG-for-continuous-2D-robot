@@ -6,8 +6,8 @@ from Memory import ReplayMemory
 from ActorCritic import ActorNetwork, CriticNetwork
 
 
-class DDPG_Agent:
-    def __int__(self, state_dim, action_dim, lr_actor=0.001, lr_critic=0.002, env=None,
+class ddpgAgent:
+    def __int__(self, state_dim, action_dim, env=None, lr_actor=0.001, lr_critic=0.002,
                 discount_factor=0.99, mem_size=1e6, polyak=0.005,
                 layer1_size=40, layer2_size=30, batch_size=64, noise=0.1):
         self.discount_factor = discount_factor
@@ -16,7 +16,7 @@ class DDPG_Agent:
         self.action_dim = action_dim
         self.memory = ReplayMemory(mem_size, state_dim, action_dim)
 
-        self.noise = noise      # standard deviation of zero-mean Gaussian noise
+        self.noise = noise   # standard deviation of zero-mean Gaussian noise
 
         self.env = env
         self.max_action = env.action_space.high[0]

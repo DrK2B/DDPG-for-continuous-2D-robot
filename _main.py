@@ -1,14 +1,13 @@
 import gym
 import numpy as np
-from Agent import DDPG_Agent
+from Agent import ddpgAgent
 from utils import plot_learning_curve
 
 
 def DDPG():
     env = gym.make('MountainCarContinuous-v0', render_mode='human')
 
-    agent = DDPG_Agent(env.observation_space.shape[0], env.action_space.shape[0],
-                       env=env)
+    agent = ddpgAgent(env.observation_space.shape[0], env.action_space.shape[0], env=env)
 
     figure_filename = 'MountainCarContinuous-v0_01.png'
 
@@ -33,6 +32,8 @@ def DDPG():
     # LAYER2_SIZE
 
     if EVALUATE:
+        # model weights cannot be directly be load into an empty new model
+        # hence, it is necessary to initialize the model weights by learning from randomly generated state transitions
         for n in range(agent.batch_size):
             state = env.reset()
             action = env.action_space.sample()
@@ -70,8 +71,7 @@ def DDPG():
 
         print('episode')
         print("Completed in {} steps.... episode: {}/{}, episode reward: {},"
-              " average episode reward"
-              .format(time, episode + 1, EPISODES, score, avg_score))
+              " average episode reward".format(time, episode + 1, EPISODES, score, avg_score))
 
     if not EVALUATE:
         episode_idx = [episode + 1 for episode in range(EPISODES)]
