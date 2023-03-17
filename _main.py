@@ -6,19 +6,19 @@ from utils import plot_learning_curve
 
 def DDPG():
     env = gym.make('MountainCarContinuous-v0', render_mode='human')
+    agent = ddpgAgent(state_dim=env.observation_space.shape[0], action_dim=env.action_space.shape[0], env=env)
 
-    agent = ddpgAgent(env.observation_space.shape[0], env.action_space.shape[0], env=env)
-
-    figure_filename = 'MountainCarContinuous-v0_01.png'
-
-    best_score = env.reward_range[1]  # initialize with worst reward value
+    best_score = env.reward_range[0]  # initialize with worst reward value
     score_history = []
+
+    FILENAME_FIG = 'MountainCarContinuous-v0_01.png'
 
     # Hyperparameters
     EPISODES = 500
     TIME_STEPS = 250
     EVALUATE = False
     EXPLORATIONS = 50   # number of episodes with (random) exploration only
+    ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
 
     # the following hyperparameters are optional inputs to agent object
     # LR_ACTOR
@@ -38,7 +38,7 @@ def DDPG():
             state = env.reset()
             action = env.action_space.sample()
             new_state, reward, done, truncated, info = env.step(action)
-            agent.remember((state, action, reward, new_state, done))
+            agent.remember(state, action, reward, new_state, done)
 
         agent.learn()
         agent.load_models()
@@ -62,12 +62,16 @@ def DDPG():
 
             state = new_state
 
+            if done:
+                break
+
         score_history.append(score)
-        avg_score = np.mean(score_history[-100:])
+        avg_score = np.mean(score_history[-ROLLING_WINDOW_SIZE_AVG_SCORE:])
         if avg_score > best_score:
             best_score = avg_score
             if not EVALUATE:
                 agent.save_models()
+                print("models' weights saved at episode: ", episode)
 
         print('episode')
         print("Completed in {} steps.... episode: {}/{}, episode reward: {},"
@@ -75,7 +79,7 @@ def DDPG():
 
     if not EVALUATE:
         episode_idx = [episode + 1 for episode in range(EPISODES)]
-        plot_learning_curve(episode_idx, score_history, figure_filename)
+        plot_learning_curve(episode_idx, score_history, FILENAME_FIG)
 
     print('Successful')
 

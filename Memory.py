@@ -6,10 +6,10 @@ class ReplayMemory:
         self.mem_size = mem_size
         self.mem_cntr = 0
 
-        self.state_memory = np.zeros((self.mem_size, *state_dim))
+        self.state_memory = np.zeros((self.mem_size, state_dim))
         self.action_memory = np.zeros((self.mem_size, action_dim))
         self.reward_memory = np.zeros(self.mem_size)
-        self.new_state_memory = np.zeros((self.mem_size, *state_dim))
+        self.new_state_memory = np.zeros((self.mem_size, state_dim))
         self.done_memory = np.zeros(self.mem_size, dtype=np.bool)
 
     def store_transition(self, state, action, reward, new_state, done):

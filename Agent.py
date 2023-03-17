@@ -14,7 +14,7 @@ class ddpgAgent:
         self.polyak = polyak
         self.batch_size = batch_size
         self.action_dim = action_dim
-        self.memory = ReplayMemory(mem_size, state_dim, action_dim)
+        self.memory = ReplayMemory(mem_size, state_dim, self.action_dim)
 
         self.noise = noise   # standard deviation of zero-mean Gaussian noise
 
