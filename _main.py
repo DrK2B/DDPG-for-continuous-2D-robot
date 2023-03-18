@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import numpy as np
 from Agent import ddpgAgent
 from utils import plot_learning_curve
@@ -16,8 +16,8 @@ def DDPG():
     DISCOUNT_FACTOR = 0.99
     MEM_SIZE = 1000000
     POLYAK = 0.005
-    LAYER1_SIZE = 40
-    LAYER2_SIZE = 30
+    LAYER1_SIZE = 10
+    LAYER2_SIZE = 10
     BATCH_SIZE = 64
     NOISE = 0.1    # std dev of zero-mean gaussian distributed noise
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
