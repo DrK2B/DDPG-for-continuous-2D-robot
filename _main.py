@@ -44,7 +44,7 @@ def DDPG():
         agent.load_models()
 
     for episode in range(EPISODES):
-        state = env.reset()
+        state = env.reset()[0]
         score = 0
         xp_boost = True \
             if (episode < EXPLORATIONS and not EVALUATE) else False
@@ -54,8 +54,6 @@ def DDPG():
 
             action = agent.choose_action(state, EVALUATE, xp_boost)
             new_state, reward, done, truncated, info = env.step(action)
-            print("truncated: ", truncated)
-            print("info: ", info)
             agent.remember(state, action, reward, new_state, done)
             score += reward
 
