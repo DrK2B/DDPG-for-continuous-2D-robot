@@ -54,6 +54,8 @@ def DDPG():
 
             action = agent.choose_action(state, EVALUATE, xp_boost)
             new_state, reward, done, truncated, info = env.step(action)
+            print("truncated: ", truncated)
+            print("info: ", info)
             agent.remember(state, action, reward, new_state, done)
             score += reward
 

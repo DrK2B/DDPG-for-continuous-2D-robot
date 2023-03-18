@@ -86,7 +86,7 @@ class ddpgAgent:
                                            stddev=self.noise)
 
         action = tf.clip_by_value(action, self.min_action, self.max_action)
-        return action[0]  # return 0th element of tensor, which is a np array
+        return action  # return 0th element of tensor, which is a np array
 
     def learn(self):
         if self.memory.mem_cntr < self.batch_size:
