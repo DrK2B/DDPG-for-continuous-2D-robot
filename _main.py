@@ -11,7 +11,7 @@ def DDPG():
 
     EPISODES = 500
     TIME_STEPS = 500
-    EXPLORATIONS = 0   # number of episodes with (random) exploration only
+    EXPLORATIONS = 50   # number of episodes with (random) exploration only
     LR_ACTOR = 0.001
     LR_CRITIC = 0.002
     DISCOUNT_FACTOR = 0.99
