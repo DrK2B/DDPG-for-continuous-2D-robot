@@ -10,5 +10,5 @@ def plot_learning_curve(x, scores, figure_file):
 
     plt.plot(x, running_avg)
     plt.title('Running average of previous 100 scores')
-    file_path = os.path.join('tmp/figures', figure_file)
+    file_path = os.path.join('model_weights/tmp/figures', figure_file)
     plt.savefig(file_path)

@@ -5,13 +5,13 @@ from keras.layers import Dense
 
 
 class CriticNetwork(keras.Model):
-    def __int__(self, layer1_size, layer2_size,
-                name='critic', chkpt_dir='tmp/model_weights'):
+    def __init__(self, layer1_size, layer2_size,
+                 name='critic', chkpt_dir='tmp/model_weights'):
         super().__init__()
         self.model_name = name  # in order to distinguish between target and main networks
         self.checkpoint_dir = chkpt_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir,
-                                            self.model_name+'_ddpg.h5')
+                                            self.model_name + '_ddpg.h5')
 
         self.layer1_size = layer1_size
         self.layer2_size = layer2_size
@@ -20,7 +20,7 @@ class CriticNetwork(keras.Model):
         self.q = Dense(1, activation=None)
 
     def call(self, state, action):
-        q_val1 = self.layer1(tf.concat([state, action], axis=-1))     # might need to change axis back to value 1
+        q_val1 = self.layer1(tf.concat([state, action], axis=-1))  # might need to change axis back to value 1
         q_val2 = self.layer2(q_val1)
         q_val = self.q(q_val2)
         return q_val
@@ -33,7 +33,7 @@ class ActorNetwork(keras.Model):
         self.model_name = name
         self.checkpoint_dir = chkpt_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir,
-                                            self.model_name+'_ddpg.h5')
+                                            self.model_name + '_ddpg.h5')
 
         self.action_dim = action_dim
         self.action_bound = act_bound

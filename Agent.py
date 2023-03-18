@@ -27,7 +27,7 @@ class ddpgAgent:
                                   act_bound=self.action_bound, name='actor')
         self.target_actor = ActorNetwork(layer1_size=layer1_size, layer2_size=layer2_size, action_dim=action_dim,
                                          act_bound=self.action_bound, name='target_actor')
-        self.critic = CriticNetwork(layer1_size, layer2_size, name='critic')
+        self.critic = CriticNetwork(layer1_size=layer1_size, layer2_size=layer2_size, name='critic')
         self.target_critic = CriticNetwork(layer1_size=layer1_size,
                                            layer2_size=layer2_size, name='target_critic')
 
