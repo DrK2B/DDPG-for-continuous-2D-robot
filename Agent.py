@@ -117,8 +117,8 @@ class ddpgAgent:
 
         with tf.GradientTape() as tape:
             policy_actions = self.actor(states)
-            # q value function has to be maximized, hence its negative has to minimized
-            # loss function of actor corresponds to negative of q value function
+            # q value function has to be maximized, hence its negative has to be minimized
+            # loss function of actor corresponds to the negative of q value function
             actor_loss = -self.critic(states, policy_actions)
             actor_loss = tf.math.reduce_mean(actor_loss)
 
