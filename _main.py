@@ -81,7 +81,7 @@ def DDPG():
         episode_idx = [episode + 1 for episode in range(EPISODES)]
         plot_learning_curve(episode_idx, score_history, FILENAME_FIG)
 
-    print('Successful')
+    print('Finished')
 
 
 if __name__ == '__main__':
