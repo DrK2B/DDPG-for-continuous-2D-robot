@@ -7,14 +7,15 @@ from ActorCritic import ActorNetwork, CriticNetwork
 
 
 class ddpgAgent:
-    def __init__(self, state_dim, action_dim, env, lr_actor=0.001, lr_critic=0.002,
+    def __init__(self, env, lr_actor=0.001, lr_critic=0.002,
                  discount_factor=0.99, mem_size=1000000, polyak=0.005,
                  layer1_size=40, layer2_size=30, batch_size=64, noise=0.1):
         self.discount_factor = discount_factor
         self.polyak = polyak
         self.batch_size = batch_size
-        self.action_dim = action_dim
-        self.memory = ReplayMemory(mem_size, state_dim, action_dim)
+        self.action_dim = env.action_space.shape[0]
+        self.state_dim = env.observation_space.shape[0]
+        self.memory = ReplayMemory(mem_size, self.state_dim, self.action_dim)
 
         self.noise = noise  # standard deviation of zero-mean Gaussian noise
 
@@ -23,9 +24,9 @@ class ddpgAgent:
         self.min_action = env.action_space.low[0]
         self.action_bound = np.max(np.abs([self.min_action, self.max_action]))
 
-        self.actor = ActorNetwork(layer1_size=layer1_size, layer2_size=layer2_size, action_dim=action_dim,
+        self.actor = ActorNetwork(layer1_size=layer1_size, layer2_size=layer2_size, action_dim=self.action_dim,
                                   act_bound=self.action_bound, name='actor')
-        self.target_actor = ActorNetwork(layer1_size=layer1_size, layer2_size=layer2_size, action_dim=action_dim,
+        self.target_actor = ActorNetwork(layer1_size=layer1_size, layer2_size=layer2_size, action_dim=self.action_dim,
                                          act_bound=self.action_bound, name='target_actor')
         self.critic = CriticNetwork(layer1_size=layer1_size, layer2_size=layer2_size, name='critic')
         self.target_critic = CriticNetwork(layer1_size=layer1_size,
@@ -79,11 +80,11 @@ class ddpgAgent:
         if exploration_boost:
             action = tf.convert_to_tensor(self.env.action_space.sample())
         else:
+            # state = tf.reshape(tf.convert_to_tensor([state], dtype=tf.float32), [2, 1])
             state = tf.convert_to_tensor([state], dtype=tf.float32)
-            action = self.actor(state)
+            action = tf.reshape(self.actor(state), self.action_dim)
             if not evaluate:
-                action += tf.random.normal(shape=[self.action_dim], mean=0.0,
-                                           stddev=self.noise)
+                action += tf.random.normal(shape=[self.action_dim], mean=0.0, stddev=self.noise)
 
         action = tf.clip_by_value(action, self.min_action, self.max_action)
         return action  # return 0th element of tensor, which is a np array
@@ -92,8 +93,7 @@ class ddpgAgent:
         if self.memory.mem_cntr < self.batch_size:
             return
 
-        states, actions, rewards, new_states, dones = \
-            self.memory.sample(self.batch_size)
+        states, actions, rewards, new_states, dones = self.memory.sample(self.batch_size)
 
         states = tf.convert_to_tensor(states, dtype=tf.float32)
         actions = tf.convert_to_tensor(actions, dtype=tf.float32)

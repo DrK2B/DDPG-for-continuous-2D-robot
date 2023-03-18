@@ -1,5 +1,6 @@
 import gymnasium as gym
 import numpy as np
+import tensorflow as tf
 from Agent import ddpgAgent
 from utils import plot_learning_curve
 
@@ -10,7 +11,7 @@ def DDPG():
 
     EPISODES = 500
     TIME_STEPS = 500
-    EXPLORATIONS = 50   # number of episodes with (random) exploration only
+    EXPLORATIONS = 0   # number of episodes with (random) exploration only
     LR_ACTOR = 0.001
     LR_CRITIC = 0.002
     DISCOUNT_FACTOR = 0.99
@@ -25,9 +26,8 @@ def DDPG():
 
     # Create environment and agent
     env = gym.make('MountainCarContinuous-v0', render_mode='human')
-    agent = ddpgAgent(state_dim=env.observation_space.shape[0], action_dim=env.action_space.shape[0], env=env,
-                      lr_actor=LR_ACTOR, lr_critic=LR_CRITIC, discount_factor=DISCOUNT_FACTOR, mem_size=MEM_SIZE,
-                      polyak=POLYAK, layer1_size=LAYER1_SIZE, layer2_size=LAYER2_SIZE,
+    agent = ddpgAgent(env=env, lr_actor=LR_ACTOR, lr_critic=LR_CRITIC, discount_factor=DISCOUNT_FACTOR,
+                      mem_size=MEM_SIZE, polyak=POLYAK, layer1_size=LAYER1_SIZE, layer2_size=LAYER2_SIZE,
                       batch_size=BATCH_SIZE, noise=NOISE)
 
     best_score = env.reward_range[0]  # initialize with worst reward value
@@ -37,7 +37,7 @@ def DDPG():
         # model weights cannot be directly be load into an empty new model
         # hence, it is necessary to initialize the model weights by learning from randomly generated state transitions
         for n in range(agent.batch_size):
-            state = env.reset()
+            state = env.reset()[0]
             action = env.action_space.sample()
             new_state, reward, done, truncated, info = env.step(action)
             agent.remember(state, action, reward, new_state, done)
@@ -55,7 +55,7 @@ def DDPG():
 
             action = agent.choose_action(state, EVALUATE, xp_boost)
             new_state, reward, done, truncated, info = env.step(action)
-            agent.remember(state, action, reward, new_state, done)
+            agent.remember(state, tf.squeeze(action), reward, new_state, done)
             score += reward
 
             if not EVALUATE:
