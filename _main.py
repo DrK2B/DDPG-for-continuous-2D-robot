@@ -9,7 +9,7 @@ def DDPG():
     # Hyperparameters and settings
     EVALUATE = False
 
-    EPISODES = 500
+    EPISODES = 1000
     TIME_STEPS = 500
     EXPLORATIONS = 50   # number of episodes with (random) exploration only
     LR_ACTOR = 0.001
@@ -34,12 +34,12 @@ def DDPG():
     score_history = []
 
     if EVALUATE:
-        # model weights cannot be directly be load into an empty new model
-        # hence, it is necessary to initialize the model weights by learning from randomly generated state transitions
+        # model weights cannot be directly be load into an empty new model; hence, it is necessary to initialize the
+        # model parameters by learning from randomly generated state transitions
         for n in range(agent.batch_size):
             state = env.reset()[0]
             action = env.action_space.sample()
-            new_state, reward, done, truncated, info = env.step(action)
+            new_state, reward, done, truncated, _ = env.step(action)
             agent.remember(state, action, reward, new_state, done)
 
         agent.learn()
@@ -54,11 +54,11 @@ def DDPG():
             env.render()
 
             action = agent.choose_action(state, EVALUATE, xp_boost)
-            new_state, reward, done, truncated, info = env.step(action)
-            agent.remember(state, tf.squeeze(action), reward, new_state, done)
+            new_state, reward, done, _, _ = env.step(action)
             score += reward
 
             if not EVALUATE:
+                agent.remember(state, tf.squeeze(action), reward, new_state, done)
                 agent.learn()
 
             state = new_state
@@ -72,7 +72,7 @@ def DDPG():
             best_score = avg_score
             if not EVALUATE:
                 agent.save_models()
-                print("models' weights saved at episode: ", episode)
+                print("models' parameters saved at episode: ", episode)
 
         print("Completed in {} steps.... episode: {}/{}, episode reward: {},"
               " average episode reward: {}".format(time, episode, EPISODES, score, avg_score))
