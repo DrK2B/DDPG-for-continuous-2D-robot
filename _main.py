@@ -5,31 +5,33 @@ from utils import plot_learning_curve
 
 
 def DDPG():
+    # Hyperparameters and settings
+    EVALUATE = False
+
+    EPISODES = 500
+    TIME_STEPS = 500
+    EXPLORATIONS = 50   # number of episodes with (random) exploration only
+    LR_ACTOR = 0.001
+    LR_CRITIC = 0.002
+    DISCOUNT_FACTOR = 0.99
+    MEM_SIZE = 1000000
+    POLYAK = 0.005
+    LAYER1_SIZE = 40
+    LAYER2_SIZE = 30
+    BATCH_SIZE = 64
+    NOISE = 0.1    # std dev of zero-mean gaussian distributed noise
+    ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
+    FILENAME_FIG = 'MountainCarContinuous-v0_01.png'
+
+    # Create environment and agent
     env = gym.make('MountainCarContinuous-v0', render_mode='human')
-    agent = ddpgAgent(state_dim=env.observation_space.shape[0], action_dim=env.action_space.shape[0], env=env)
+    agent = ddpgAgent(state_dim=env.observation_space.shape[0], action_dim=env.action_space.shape[0], env=env,
+                      lr_actor=LR_ACTOR, lr_critic=LR_CRITIC, discount_factor=DISCOUNT_FACTOR, mem_size=MEM_SIZE,
+                      polyak=POLYAK, layer1_size=LAYER1_SIZE, layer2_size=LAYER2_SIZE,
+                      batch_size=BATCH_SIZE, noise=NOISE)
 
     best_score = env.reward_range[0]  # initialize with worst reward value
     score_history = []
-
-    FILENAME_FIG = 'MountainCarContinuous-v0_01.png'
-
-    # Hyperparameters
-    EPISODES = 500
-    TIME_STEPS = 250
-    EVALUATE = False
-    EXPLORATIONS = 50   # number of episodes with (random) exploration only
-    ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
-
-    # the following hyperparameters are optional inputs to agent object
-    # LR_ACTOR
-    # LR_CRITIC
-    # DISCOUNT_FACTOR
-    # MEM_SIZE
-    # POLYAK
-    # BATCH_SIZE
-    # NOISE aka std dev (zero-mean gaussian)
-    # LAYER1_SIZE
-    # LAYER2_SIZE
 
     if EVALUATE:
         # model weights cannot be directly be load into an empty new model
@@ -43,13 +45,12 @@ def DDPG():
         agent.learn()
         agent.load_models()
 
-    for episode in range(EPISODES):
+    for episode in range(1, EPISODES+1):
         state = env.reset()[0]
         score = 0
-        xp_boost = True \
-            if (episode < EXPLORATIONS and not EVALUATE) else False
+        xp_boost = True if (episode <= EXPLORATIONS and not EVALUATE) else False
 
-        for time in range(TIME_STEPS):
+        for time in range(1, TIME_STEPS+1):
             env.render()
 
             action = agent.choose_action(state, EVALUATE, xp_boost)
@@ -73,9 +74,8 @@ def DDPG():
                 agent.save_models()
                 print("models' weights saved at episode: ", episode)
 
-        print('episode')
         print("Completed in {} steps.... episode: {}/{}, episode reward: {},"
-              " average episode reward".format(time, episode + 1, EPISODES, score, avg_score))
+              " average episode reward: {}".format(time, episode, EPISODES, score, avg_score))
 
     if not EVALUATE:
         episode_idx = [episode + 1 for episode in range(EPISODES)]

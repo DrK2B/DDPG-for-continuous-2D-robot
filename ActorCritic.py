@@ -27,7 +27,7 @@ class CriticNetwork(keras.Model):
 
 
 class ActorNetwork(keras.Model):
-    def __init__(self, layer1_size, layer2_size, action_dim=2,
+    def __init__(self, layer1_size, layer2_size, action_dim,
                  act_bound=1, name='actor', chkpt_dir='tmp/model_weights'):
         super().__init__()
         self.model_name = name

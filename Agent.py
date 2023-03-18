@@ -7,7 +7,7 @@ from ActorCritic import ActorNetwork, CriticNetwork
 
 
 class ddpgAgent:
-    def __init__(self, state_dim, action_dim, env=None, lr_actor=0.001, lr_critic=0.002,
+    def __init__(self, state_dim, action_dim, env, lr_actor=0.001, lr_critic=0.002,
                  discount_factor=0.99, mem_size=1000000, polyak=0.005,
                  layer1_size=40, layer2_size=30, batch_size=64, noise=0.1):
         self.discount_factor = discount_factor
@@ -73,7 +73,7 @@ class ddpgAgent:
         self.critic.load_weights(self.critic.checkpoint_file)
         self.target_critic.load_weights(self.target_critic.checkpoint_file)
 
-    def choose_action(self, state, evaluate=False, exploration_boost=False):
+    def choose_action(self, state, evaluate, exploration_boost=False):
         # at the start of the training, actions are sampled from a uniform random
         # distribution over valid actions for a fixed number of steps (batch size?)
         if exploration_boost:
