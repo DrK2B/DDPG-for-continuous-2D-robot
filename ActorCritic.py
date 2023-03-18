@@ -46,6 +46,6 @@ class ActorNetwork(keras.Model):
 
     def call(self, state):
         mu_val1 = self.layer1(state)
-        mu_val2 = self.layer1(mu_val1)
+        mu_val2 = self.layer2(mu_val1)
         mu_val = self.action_bound * self.mu(mu_val2)
         return mu_val
