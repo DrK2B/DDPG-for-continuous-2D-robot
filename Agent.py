@@ -99,7 +99,7 @@ class ddpgAgent:
         rewards = tf.convert_to_tensor(rewards, dtype=tf.float32)
         new_states = tf.convert_to_tensor(new_states, dtype=tf.float32)
 
-        with tf.GradientTape() as tape:  # ToDo: look up what this line does exactly
+        with tf.GradientTape() as tape:
             # computing the targets (y) of mean-squared Bellman error (MSBE) function
             new_target_actions = self.target_actor(new_states)
             new_target_q_values = tf.squeeze(self.target_critic(
