@@ -80,7 +80,6 @@ class ddpgAgent:
         if exploration_boost:
             action = tf.convert_to_tensor(self.env.action_space.sample())
         else:
-            # state = tf.reshape(tf.convert_to_tensor([state], dtype=tf.float32), [2, 1])
             state = tf.convert_to_tensor([state], dtype=tf.float32)
             action = tf.reshape(self.actor(state), self.action_dim)
             if not evaluate:
