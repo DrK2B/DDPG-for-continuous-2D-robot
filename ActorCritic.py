@@ -17,7 +17,7 @@ class CriticNetwork(keras.Model):
         self.layer2_size = layer2_size
         self.layer1 = Dense(self.layer1_size, activation='relu')
         self.layer2 = Dense(self.layer2_size, activation='relu')
-        self.q = Dense(1, activation=None)
+        self.q = Dense(1, activation='linear')
 
     def call(self, state, action):
         q_val1 = self.layer1(tf.concat([state, action], axis=-1))  # might need to change axis back to value 1

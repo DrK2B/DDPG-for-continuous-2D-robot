@@ -9,7 +9,7 @@ from ActorCritic import ActorNetwork, CriticNetwork
 class ddpgAgent:
     def __init__(self, env, lr_actor=0.001, lr_critic=0.002,
                  discount_factor=0.99, mem_size=1000000, polyak=0.005,
-                 layer1_size=40, layer2_size=30, batch_size=64, noise=0.1):
+                 layer1_size=50, layer2_size=50, batch_size=64, noise=0.1):
         self.discount_factor = discount_factor
         self.polyak = polyak
         self.batch_size = batch_size

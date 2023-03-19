@@ -17,10 +17,10 @@ def DDPG():
     DISCOUNT_FACTOR = 0.99
     MEM_SIZE = 1000000
     POLYAK = 0.005
-    LAYER1_SIZE = 100
-    LAYER2_SIZE = 100
+    LAYER1_SIZE = 64
+    LAYER2_SIZE = 64
     BATCH_SIZE = 64
-    NOISE = 0.1  # std dev of zero-mean gaussian distributed noise
+    NOISE = 0.3  # std dev of zero-mean gaussian distributed noise
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
     FILENAME_FIG = 'MountainCarContinuous-v0_01'
 
@@ -52,7 +52,7 @@ def DDPG():
         xp_boost = True if (episode <= EXPLORATIONS and not EVALUATE) else False
 
         for time in range(1, TIME_STEPS + 1):
-            env.render()
+            # env.render()
 
             action = agent.choose_action(state, EVALUATE, xp_boost)
             new_state, reward, done, _, _ = env.step(action)
@@ -85,7 +85,7 @@ def DDPG():
         save_learningCurveData_to_csv(score_history, FILENAME_FIG)
         plot_learning_curve(score_history, FILENAME_FIG, ROLLING_WINDOW_SIZE_AVG_SCORE)
 
-    print('-----Finished DDPG-----')
+    print('--- Finished DDPG ---')
 
 
 if __name__ == '__main__':
