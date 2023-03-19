@@ -9,9 +9,9 @@ def DDPG():
     # Hyperparameters and settings
     EVALUATE = False
 
-    EPISODES = 5
+    EPISODES = 1000
     TIME_STEPS = 500
-    EXPLORATIONS = 50   # number of episodes with (random) exploration only
+    EXPLORATIONS = 100   # number of episodes with (random) exploration only
     LR_ACTOR = 0.001
     LR_CRITIC = 0.002
     DISCOUNT_FACTOR = 0.99
@@ -20,7 +20,7 @@ def DDPG():
     LAYER1_SIZE = 50
     LAYER2_SIZE = 50
     BATCH_SIZE = 64
-    NOISE = 0.1    # std dev of zero-mean gaussian distributed noise
+    NOISE = 0.05    # std dev of zero-mean gaussian distributed noise
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
     FILENAME_FIG = 'MountainCarContinuous-v0_01.png'
 
