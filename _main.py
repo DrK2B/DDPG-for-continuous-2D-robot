@@ -9,7 +9,7 @@ def DDPG():
     # Hyperparameters and settings
     EVALUATE = False
 
-    EPISODES = 1000
+    EPISODES = 500
     TIME_STEPS = 500
     EXPLORATIONS = 50   # number of episodes with (random) exploration only
     LR_ACTOR = 0.001
@@ -17,8 +17,8 @@ def DDPG():
     DISCOUNT_FACTOR = 0.99
     MEM_SIZE = 1000000
     POLYAK = 0.005
-    LAYER1_SIZE = 10
-    LAYER2_SIZE = 10
+    LAYER1_SIZE = 50
+    LAYER2_SIZE = 50
     BATCH_SIZE = 64
     NOISE = 0.1    # std dev of zero-mean gaussian distributed noise
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
@@ -33,6 +33,7 @@ def DDPG():
     best_score = env.reward_range[0]  # initialize with worst reward value
     score_history = []
 
+    # start training or evaluation
     if EVALUATE:
         # model weights cannot be directly be load into an empty new model; hence, it is necessary to initialize the
         # model parameters by learning from randomly generated state transitions
@@ -77,8 +78,11 @@ def DDPG():
         print("Completed in {} steps.... episode: {}/{}, episode reward: {},"
               " average episode reward: {}".format(time, episode, EPISODES, score, avg_score))
 
+    # Close the environment
+    env.close()
+
     if not EVALUATE:
-        episode_idx = [episode + 1 for episode in range(EPISODES)]
+        episode_idx = [episode for episode in range(1, EPISODES+1)]
         plot_learning_curve(episode_idx, score_history, FILENAME_FIG)
 
     print('Finished')
