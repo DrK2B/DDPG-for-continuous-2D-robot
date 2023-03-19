@@ -17,8 +17,8 @@ def DDPG():
     DISCOUNT_FACTOR = 0.99
     MEM_SIZE = 100000
     POLYAK = 0.005
-    CRITIC_LAYER_SIZES = (64, 64, 64)   # critic networks are designed with 3 hidden layers
-    ACTOR_LAYER_SIZES = (64, 64)    # actor networks are designed with 2 hidden layers
+    CRITIC_LAYER_SIZES = (64, 64, 64)   # critic networks are designed to have 3 hidden layers
+    ACTOR_LAYER_SIZES = (64, 64)    # actor networks are designed to have 2 hidden layers
     BATCH_SIZE = 64
     NOISE = 0.3  # std dev of zero-mean gaussian distributed noise
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
@@ -52,8 +52,6 @@ def DDPG():
         xp_boost = True if (episode <= EXPLORATIONS and not EVALUATE) else False
 
         for time in range(1, TIME_STEPS + 1):
-            # env.render()
-
             action = agent.choose_action(state, EVALUATE, xp_boost)
             new_state, reward, done, _, _ = env.step(action)
             score += reward
