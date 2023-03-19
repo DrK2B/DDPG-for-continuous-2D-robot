@@ -9,7 +9,7 @@ def DDPG():
     # Hyperparameters and settings
     EVALUATE = False
 
-    EPISODES = 500
+    EPISODES = 5
     TIME_STEPS = 500
     EXPLORATIONS = 50   # number of episodes with (random) exploration only
     LR_ACTOR = 0.001
@@ -83,7 +83,7 @@ def DDPG():
 
     if not EVALUATE:
         episode_idx = [episode for episode in range(1, EPISODES+1)]
-        plot_learning_curve(episode_idx, score_history, FILENAME_FIG)
+        plot_learning_curve(episode_idx, score_history, FILENAME_FIG, ROLLING_WINDOW_SIZE_AVG_SCORE)
 
     print('Finished')
 
