@@ -9,7 +9,7 @@ def DDPG():
     # Hyperparameters and settings
     EVALUATE = False
 
-    EPISODES = 1
+    EPISODES = 1000
     TIME_STEPS = 500
     EXPLORATIONS = 100   # number of episodes with (random) exploration only
     LR_ACTOR = 0.001
