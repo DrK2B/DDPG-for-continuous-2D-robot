@@ -2,14 +2,14 @@ import gymnasium as gym
 import numpy as np
 import tensorflow as tf
 from Agent import ddpgAgent
-from utils import plot_learning_curve
+from utils import plot_learning_curve, save_learningCurveData_to_csv
 
 
 def DDPG():
     # Hyperparameters and settings
     EVALUATE = False
 
-    EPISODES = 1000
+    EPISODES = 1
     TIME_STEPS = 500
     EXPLORATIONS = 100   # number of episodes with (random) exploration only
     LR_ACTOR = 0.001
@@ -22,7 +22,7 @@ def DDPG():
     BATCH_SIZE = 64
     NOISE = 0.05    # std dev of zero-mean gaussian distributed noise
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
-    FILENAME_FIG = 'MountainCarContinuous-v0_01.png'
+    FILENAME_FIG = 'MountainCarContinuous-v0_01'
 
     # Create environment and agent
     env = gym.make('MountainCarContinuous-v0', render_mode='human')
@@ -83,6 +83,7 @@ def DDPG():
 
     if not EVALUATE:
         episode_idx = [episode for episode in range(1, EPISODES+1)]
+        save_learningCurveData_to_csv(episode_idx, score_history, FILENAME_FIG)
         plot_learning_curve(episode_idx, score_history, FILENAME_FIG, ROLLING_WINDOW_SIZE_AVG_SCORE)
 
     print('Finished')
