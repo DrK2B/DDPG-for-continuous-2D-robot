@@ -11,14 +11,14 @@ def DDPG():
 
     EPISODES = 1000
     TIME_STEPS = 500
-    EXPLORATIONS = 0  # number of episodes with (random) exploration only
+    EXPLORATIONS = 50  # number of episodes with (random) exploration only
     LR_ACTOR = 0.001
     LR_CRITIC = 0.002
     DISCOUNT_FACTOR = 0.99
-    MEM_SIZE = 1000000
+    MEM_SIZE = 100000
     POLYAK = 0.005
-    LAYER1_SIZE = 64
-    LAYER2_SIZE = 64
+    CRITIC_LAYER_SIZES = (64, 64, 64)   # critic networks are designed with 3 hidden layers
+    ACTOR_LAYER_SIZES = (64, 64)    # actor networks are designed with 2 hidden layers
     BATCH_SIZE = 64
     NOISE = 0.3  # std dev of zero-mean gaussian distributed noise
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
@@ -27,8 +27,8 @@ def DDPG():
     # Create environment and agent
     env = gym.make('MountainCarContinuous-v0', render_mode='human')
     agent = ddpgAgent(env=env, lr_actor=LR_ACTOR, lr_critic=LR_CRITIC, discount_factor=DISCOUNT_FACTOR,
-                      mem_size=MEM_SIZE, polyak=POLYAK, layer1_size=LAYER1_SIZE, layer2_size=LAYER2_SIZE,
-                      batch_size=BATCH_SIZE, noise=NOISE)
+                      mem_size=MEM_SIZE, polyak=POLYAK, critic_layer_sizes=CRITIC_LAYER_SIZES,
+                      actor_layer_sizes=ACTOR_LAYER_SIZES, batch_size=BATCH_SIZE, noise=NOISE)
 
     best_score = env.reward_range[0]  # initialize with worst reward value
     score_history = []

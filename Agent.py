@@ -9,7 +9,7 @@ from ActorCritic import ActorNetwork, CriticNetwork
 class ddpgAgent:
     def __init__(self, env, lr_actor=0.001, lr_critic=0.002,
                  discount_factor=0.99, mem_size=1000000, polyak=0.005,
-                 layer1_size=50, layer2_size=50, batch_size=64, noise=0.1):
+                 critic_layer_sizes=(50, 50, 50), actor_layer_sizes=(50, 50), batch_size=64, noise=0.1):
         self.discount_factor = discount_factor
         self.polyak = polyak
         self.batch_size = batch_size
@@ -24,13 +24,14 @@ class ddpgAgent:
         self.min_action = env.action_space.low[0]
         self.action_bound = np.max(np.abs([self.min_action, self.max_action]))
 
-        self.actor = ActorNetwork(layer1_size=layer1_size, layer2_size=layer2_size, action_dim=self.action_dim,
-                                  act_bound=self.action_bound, name='actor')
-        self.target_actor = ActorNetwork(layer1_size=layer1_size, layer2_size=layer2_size, action_dim=self.action_dim,
-                                         act_bound=self.action_bound, name='target_actor')
-        self.critic = CriticNetwork(layer1_size=layer1_size, layer2_size=layer2_size, name='critic')
-        self.target_critic = CriticNetwork(layer1_size=layer1_size,
-                                           layer2_size=layer2_size, name='target_critic')
+        self.actor = ActorNetwork(layer1_size=actor_layer_sizes[0], layer2_size=actor_layer_sizes[1],
+                                  action_dim=self.action_dim, act_bound=self.action_bound, name='actor')
+        self.target_actor = ActorNetwork(layer1_size=actor_layer_sizes[0], layer2_size=actor_layer_sizes[1],
+                                         action_dim=self.action_dim, act_bound=self.action_bound, name='target_actor')
+        self.critic = CriticNetwork(layer1_size=critic_layer_sizes[0], layer2_size=critic_layer_sizes[1],
+                                    layer3_size=critic_layer_sizes[2], name='critic')
+        self.target_critic = CriticNetwork(layer1_size=critic_layer_sizes[0], layer2_size=critic_layer_sizes[1],
+                                           layer3_size=critic_layer_sizes[2], name='target_critic')
 
         self.actor.compile(optimizer=Adam(learning_rate=lr_actor))
         self.target_actor.compile(optimizer=Adam(learning_rate=lr_actor))
