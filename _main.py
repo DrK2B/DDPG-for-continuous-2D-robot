@@ -11,16 +11,16 @@ def DDPG():
 
     EPISODES = 1000
     TIME_STEPS = 500
-    EXPLORATIONS = 100   # number of episodes with (random) exploration only
+    EXPLORATIONS = 0  # number of episodes with (random) exploration only
     LR_ACTOR = 0.001
     LR_CRITIC = 0.002
     DISCOUNT_FACTOR = 0.99
     MEM_SIZE = 1000000
     POLYAK = 0.005
-    LAYER1_SIZE = 50
-    LAYER2_SIZE = 50
+    LAYER1_SIZE = 100
+    LAYER2_SIZE = 100
     BATCH_SIZE = 64
-    NOISE = 0.05    # std dev of zero-mean gaussian distributed noise
+    NOISE = 0.1  # std dev of zero-mean gaussian distributed noise
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
     FILENAME_FIG = 'MountainCarContinuous-v0_01'
 
@@ -46,12 +46,12 @@ def DDPG():
         agent.learn()
         agent.load_models()
 
-    for episode in range(1, EPISODES+1):
+    for episode in range(1, EPISODES + 1):
         state = env.reset()[0]
         score = 0
         xp_boost = True if (episode <= EXPLORATIONS and not EVALUATE) else False
 
-        for time in range(1, TIME_STEPS+1):
+        for time in range(1, TIME_STEPS + 1):
             env.render()
 
             action = agent.choose_action(state, EVALUATE, xp_boost)
@@ -82,11 +82,10 @@ def DDPG():
     env.close()
 
     if not EVALUATE:
-        episode_idx = [episode for episode in range(1, EPISODES+1)]
-        save_learningCurveData_to_csv(episode_idx, score_history, FILENAME_FIG)
-        plot_learning_curve(episode_idx, score_history, FILENAME_FIG, ROLLING_WINDOW_SIZE_AVG_SCORE)
+        save_learningCurveData_to_csv(score_history, FILENAME_FIG)
+        plot_learning_curve(score_history, FILENAME_FIG, ROLLING_WINDOW_SIZE_AVG_SCORE)
 
-    print('Finished')
+    print('-----Finished DDPG-----')
 
 
 if __name__ == '__main__':
