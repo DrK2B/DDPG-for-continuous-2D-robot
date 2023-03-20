@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import csv
+from datetime import datetime
 
 
 def plot_learning_curve(scores, filename, rolling_window_size=100, **hyperparameters):
@@ -37,3 +38,14 @@ def save_learningCurveData_to_csv(scores, filename):
         for i in range(1, len(scores)+1):
             writer.writerow([i, scores[i-1]])
     print("Saved learning curve data")
+
+
+def create_unique_filename(filename):
+    """
+    appends a time stamp (format YYYYMMDD-hhmmss) to the file name
+    :param filename: original file name
+    :return: new file name with time stamp
+    """
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    filename = '_'.join((filename, timestamp))
+    return filename

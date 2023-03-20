@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from Agent import ddpgAgent
 from Noise import OUNoise
-from utils import plot_learning_curve, save_learningCurveData_to_csv
+from utils import plot_learning_curve, save_learningCurveData_to_csv, create_unique_filename
 
 
 def DDPG():
@@ -11,21 +11,21 @@ def DDPG():
     HPARAMS = {
         "Episodes": 2,
         "Time steps": 500,
-        "Explorations": 0,                  # number of episodes with (random) exploration only
+        "Explorations": 0,  # number of episodes with (random) exploration only
         "Critic learning rate": 0.001,
         "Actor learning rate": 0.002,
         "Discount factor": 0.99,
         "Memory size": 100000,
         "Polyak averaging": 0.005,
-        "Critic layer sizes": (64, 64),     # critic networks are designed to have 2 hidden layers
-        "Actor layer sizes": (64, 64),      # actor networks are designed to have 2 hidden layers
+        "Critic layer sizes": (64, 64),  # critic networks are designed to have 2 hidden layers
+        "Actor layer sizes": (64, 64),  # actor networks are designed to have 2 hidden layers
         "Batch size": 64,
-        "Noise std dev.": 0.25              # std dev of zero-mean gaussian distributed noise
+        "Noise std dev.": 0.25  # std dev of zero-mean gaussian distributed noise
     }
 
     EVALUATE = False
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
-    FILENAME_FIG = 'MountainCarContinuous-v0_01'
+    FILENAME_FIG = 'MountainCarContinuous-v0'
 
     # Create environment, agent and noise process
     env = gym.make('MountainCarContinuous-v0', render_mode='human')
@@ -91,6 +91,7 @@ def DDPG():
     env.close()
 
     if not EVALUATE:
+        FILENAME_FIG = create_unique_filename(FILENAME_FIG)
         save_learningCurveData_to_csv(score_history, FILENAME_FIG)
         plot_learning_curve(score_history, FILENAME_FIG, ROLLING_WINDOW_SIZE_AVG_SCORE, **HPARAMS)
 
