@@ -7,7 +7,7 @@ from utils import plot_learning_curve, save_learningCurveData_to_csv, create_uni
 
 
 def DDPG():
-    # Hyperparameters and settings
+    # Hyperparameters
     HPARAMS = {
         "Episodes": 1000,
         "Time steps": 500,
@@ -23,6 +23,7 @@ def DDPG():
         "Noise std dev.": 0.25  # std dev of zero-mean gaussian distributed noise
     }
 
+    # settings
     EVALUATE = False
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
     FILENAME_FIG = 'MountainCarContinuous-v0'
@@ -70,7 +71,6 @@ def DDPG():
                 new_state, reward, done, _, _ = env.step(action)
 
             score += reward
-
             state = new_state
 
             if done:
