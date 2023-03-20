@@ -84,6 +84,7 @@ class ddpgAgent:
             state = tf.convert_to_tensor([state], dtype=tf.float32)
             action = tf.reshape(self.actor(state), self.action_dim)
             if not evaluate:
+                # add Gaussian noise
                 # action += tf.random.normal(shape=[self.action_dim], mean=0.0, stddev=self.noise)
                 pass
 
