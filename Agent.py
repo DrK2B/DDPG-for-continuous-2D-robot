@@ -73,7 +73,7 @@ class ddpgAgent:
         self.critic.load_weights(self.critic.checkpoint_file)
         self.target_critic.load_weights(self.target_critic.checkpoint_file)
 
-    def choose_action(self, state, evaluate, exploration_boost=False):
+    def choose_action(self, state, exploration_boost=False):
         # at the start of the training, actions are sampled from a uniform random
         # distribution over valid actions for a fixed number of steps (batch size?)
         if exploration_boost:

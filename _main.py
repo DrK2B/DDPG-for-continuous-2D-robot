@@ -8,7 +8,7 @@ from utils import plot_learning_curve, save_learningCurveData_to_csv
 
 def DDPG():
     # Hyperparameters and settings
-    EVALUATE = False
+    EVALUATE = True
 
     EPISODES = 1000
     TIME_STEPS = 500
@@ -55,15 +55,17 @@ def DDPG():
         xp_boost = True if (episode <= EXPLORATIONS and not EVALUATE) else False
 
         for time in range(1, TIME_STEPS + 1):
-            action = agent.choose_action(state, EVALUATE, xp_boost)
-            noisy_action = noise.add_noise(action, t=time)
-            new_state, reward, done, _, _ = env.step(noisy_action)
-            score += reward
-            # print("time: %d | action: %f | reward: %f" % (time, noisy_action, reward))
-
+            action = agent.choose_action(state, xp_boost)
             if not EVALUATE:
+                noisy_action = noise.add_noise(action, t=time)
+                new_state, reward, done, _, _ = env.step(noisy_action)
                 agent.remember(state, tf.squeeze(noisy_action), reward, new_state, done)
                 agent.learn()
+                # print("time: %d | action: %f | reward: %f" % (time, noisy_action, reward))
+            else:
+                new_state, reward, done, _, _ = env.step(action)
+
+            score += reward
 
             state = new_state
 
