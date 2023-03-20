@@ -9,7 +9,7 @@ from utils import plot_learning_curve, save_learningCurveData_to_csv, create_uni
 def DDPG():
     # Hyperparameters and settings
     HPARAMS = {
-        "Episodes": 2,
+        "Episodes": 1000,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only
         "Critic learning rate": 0.001,
@@ -17,8 +17,8 @@ def DDPG():
         "Discount factor": 0.99,
         "Memory size": 100000,
         "Polyak averaging": 0.005,
-        "Critic layer sizes": (64, 64),  # critic networks are designed to have 2 hidden layers
-        "Actor layer sizes": (64, 64),  # actor networks are designed to have 2 hidden layers
+        "Critic layer sizes": (10, 10),  # critic networks are designed to have 2 hidden layers
+        "Actor layer sizes": (10, 10),  # actor networks are designed to have 2 hidden layers
         "Batch size": 64,
         "Noise std dev.": 0.25  # std dev of zero-mean gaussian distributed noise
     }
@@ -51,7 +51,7 @@ def DDPG():
         agent.learn()
         agent.load_models()
 
-    # ToDo: add termination criterion: stop if there's no improvement (optional)
+    # ToDo: add termination criterion so that training stops if there is no improvement over several episodes (optional)
     for episode in range(1, HPARAMS["Episodes"] + 1):
         state = env.reset()[0]
         noise.reset()
