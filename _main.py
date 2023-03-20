@@ -10,7 +10,7 @@ def DDPG():
     # Hyperparameters and settings
     EVALUATE = False
 
-    EPISODES = 10
+    EPISODES = 1000
     TIME_STEPS = 500
     EXPLORATIONS = 0  # number of episodes with (random) exploration only
     LR_ACTOR = 0.001
@@ -59,7 +59,7 @@ def DDPG():
             noisy_action = noise.add_noise(action, t=time)
             new_state, reward, done, _, _ = env.step(noisy_action)
             score += reward
-            print("time: %d | action: %f | reward: %f" % (time, noisy_action, reward))
+            # print("time: %d | action: %f | reward: %f" % (time, noisy_action, reward))
 
             if not EVALUATE:
                 agent.remember(state, tf.squeeze(noisy_action), reward, new_state, done)
