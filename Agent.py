@@ -9,15 +9,13 @@ from ActorCritic import ActorNetwork, CriticNetwork
 class ddpgAgent:
     def __init__(self, env, lr_actor=0.001, lr_critic=0.002,
                  discount_factor=0.99, mem_size=1000000, polyak=0.005,
-                 critic_layer_sizes=(50, 50, 50), actor_layer_sizes=(50, 50), batch_size=64, noise=0.1):
+                 critic_layer_sizes=(50, 50, 50), actor_layer_sizes=(50, 50), batch_size=64):
         self.discount_factor = discount_factor
         self.polyak = polyak
         self.batch_size = batch_size
         self.action_dim = env.action_space.shape[0]
         self.state_dim = env.observation_space.shape[0]
         self.memory = ReplayMemory(mem_size, self.state_dim, self.action_dim)
-
-        self.noise = noise  # standard deviation of zero-mean Gaussian noise
 
         self.env = env
         self.max_action = env.action_space.high[0]
@@ -83,10 +81,6 @@ class ddpgAgent:
         else:
             state = tf.convert_to_tensor([state], dtype=tf.float32)
             action = tf.reshape(self.actor(state), self.action_dim)
-            if not evaluate:
-                # add Gaussian noise
-                # action += tf.random.normal(shape=[self.action_dim], mean=0.0, stddev=self.noise)
-                pass
 
         action = tf.clip_by_value(action, self.min_action, self.max_action)
         return action  # return 0th element of tensor, which is a np array

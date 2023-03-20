@@ -29,7 +29,7 @@ def DDPG():
     env = gym.make('MountainCarContinuous-v0', render_mode='human')
     agent = ddpgAgent(env=env, lr_actor=LR_ACTOR, lr_critic=LR_CRITIC, discount_factor=DISCOUNT_FACTOR,
                       mem_size=MEM_SIZE, polyak=POLYAK, critic_layer_sizes=CRITIC_LAYER_SIZES,
-                      actor_layer_sizes=ACTOR_LAYER_SIZES, batch_size=BATCH_SIZE, noise=NOISE)
+                      actor_layer_sizes=ACTOR_LAYER_SIZES, batch_size=BATCH_SIZE)
     noise = OUNoise(action_space=env.action_space, max_sigma=NOISE)
 
     best_score = env.reward_range[0]  # initialize with worst reward value
