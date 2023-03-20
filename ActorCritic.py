@@ -19,7 +19,7 @@ class CriticNetwork(keras.Model):
         self.q = Dense(1)
 
     def call(self, state, action):
-        q_val1 = self.layer1(tf.concat([state, action], axis=1))  # ToDo: check how input looks like after concat
+        q_val1 = self.layer1(tf.concat([state, action], axis=-1))  # ToDo: check how input looks like after concat
         q_val2 = self.layer2(q_val1)
         q_val3 = self.layer3(q_val2)
         q_val = self.q(q_val3)

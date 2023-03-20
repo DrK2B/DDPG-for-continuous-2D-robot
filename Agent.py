@@ -84,7 +84,8 @@ class ddpgAgent:
             state = tf.convert_to_tensor([state], dtype=tf.float32)
             action = tf.reshape(self.actor(state), self.action_dim)
             if not evaluate:
-                action += tf.random.normal(shape=[self.action_dim], mean=0.0, stddev=self.noise)
+                # action += tf.random.normal(shape=[self.action_dim], mean=0.0, stddev=self.noise)
+                pass
 
         action = tf.clip_by_value(action, self.min_action, self.max_action)
         return action  # return 0th element of tensor, which is a np array
@@ -104,8 +105,8 @@ class ddpgAgent:
             # computing the targets (y) of mean-squared Bellman error (MSBE) function
             new_target_actions = self.target_actor(new_states)
             new_target_q_values = tf.squeeze(self.target_critic(
-                new_states, new_target_actions), -1)  # might need to change axis back to value 1
-            q_values = tf.squeeze(self.critic(states, actions), -1)  # might need to change axis back to value 1
+                new_states, new_target_actions))  # ToDo: might need to change axis back to value 1
+            q_values = tf.squeeze(self.critic(states, actions))  # ToDo:  might need to change axis back to value 1
             targets = rewards + self.discount_factor * (1 - dones) * new_target_q_values
 
             critic_loss = keras.losses.MSE(targets, q_values)
