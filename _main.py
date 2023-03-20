@@ -48,7 +48,7 @@ def DDPG():
         agent.learn()
         agent.load_models()
 
-    for episode in range(1, EPISODES + 1):      # ToDo: add termination criterion: stop if there's no improvement
+    for episode in range(1, EPISODES + 1):      # ToDo: add termination criterion: stop if there's no improvement (opt.)
         state = env.reset()[0]
         noise.reset()
         score = 0
