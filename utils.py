@@ -10,7 +10,7 @@ def plot_learning_curve(scores, filename, rolling_window_size=100, *hyperparamet
     for i in range(len(running_avg)):
         running_avg[i] = np.mean(scores[max(0, i - rolling_window_size):(i + 1)])
 
-    plt.plot(range(len(running_avg)), running_avg)
+    plt.plot(range(1, len(running_avg)+1), running_avg)
     plt.title('Running average of previous %d scores' % rolling_window_size)
     plt.xlabel('episode')
     plt.ylabel('average score')
@@ -28,5 +28,5 @@ def save_learningCurveData_to_csv(scores, filename):
         writer = csv.writer(file)
         writer.writerow(['x', 'y'])
         for i in range(1, len(scores)+1):
-            writer.writerow([i, scores[i]])
+            writer.writerow([i, scores[i-1]])
     print("saved learning curve data")
