@@ -9,7 +9,7 @@ from utils import plot_learning_curve, save_learningCurveData_to_csv, create_uni
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 1000,
+        "Episodes": 50,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only
         "Critic learning rate": 0.001,
@@ -24,7 +24,7 @@ def DDPG():
     }
 
     # settings
-    EVALUATE = False
+    EVALUATE = True
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
     FILENAME_FIG = 'MountainCarContinuous-v0'
 

@@ -6,7 +6,7 @@ from keras.layers import Dense
 
 class CriticNetwork(keras.Model):
     def __init__(self, layer1_size, layer2_size,
-                 name='critic', chkpt_dir='tmp/model_weights'):
+                 name='critic', chkpt_dir='tmp/models'):
         super().__init__()
         self.model_name = name  # in order to distinguish between target and main networks
         self.checkpoint_dir = chkpt_dir
@@ -28,7 +28,7 @@ class CriticNetwork(keras.Model):
 
 class ActorNetwork(keras.Model):
     def __init__(self, layer1_size, layer2_size, action_dim,
-                 act_bound=1, name='actor', chkpt_dir='tmp/model_weights'):
+                 act_bound=1, name='actor', chkpt_dir='tmp/models'):
         super().__init__()
         self.model_name = name
         self.checkpoint_dir = chkpt_dir
