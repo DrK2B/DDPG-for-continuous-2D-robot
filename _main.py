@@ -51,7 +51,7 @@ def DDPG():
         agent.learn()
         agent.load_models()
 
-    # ToDo: add termination criterion: stop if there's no improvement (opt.)
+    # ToDo: add termination criterion: stop if there's no improvement (optional)
     for episode in range(1, HPARAMS["Episodes"] + 1):
         state = env.reset()[0]
         noise.reset()
