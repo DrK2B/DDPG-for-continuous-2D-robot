@@ -35,10 +35,10 @@ class ddpgAgent:
         self.critic.compile(optimizer=Adam(learning_rate=lr_critic))
         self.target_critic.compile(optimizer=Adam(learning_rate=lr_critic))
 
-        self.update_network_parameters(polyak=1)
+        self.update_target_networks(polyak=1)
 
     # Performs soft update on the target networks with update rate polyak
-    def update_network_parameters(self, polyak=None):
+    def update_target_networks(self, polyak=None):
         if polyak is None:
             polyak = self.polyak
 
@@ -121,4 +121,4 @@ class ddpgAgent:
             zip(actor_network_grad, self.actor.trainable_variables))
 
         # soft update of the target networks
-        self.update_network_parameters()
+        self.update_target_networks()
