@@ -23,19 +23,6 @@ def DDPG():
         "Noise std dev.": 0.25              # std dev of zero-mean gaussian distributed noise
     }
 
-    EPISODES = 1000
-    TIME_STEPS = 500
-    EXPLORATIONS = 0  # number of episodes with (random) exploration only
-    LR_ACTOR = 0.001
-    LR_CRITIC = 0.002
-    DISCOUNT_FACTOR = 0.99
-    MEM_SIZE = 100000
-    POLYAK = 0.005
-    CRITIC_LAYER_SIZES = (64, 64)   # critic networks are designed to have 2 hidden layers
-    ACTOR_LAYER_SIZES = (64, 64)    # actor networks are designed to have 2 hidden layers
-    BATCH_SIZE = 64
-    NOISE = 0.25  # std dev of zero-mean gaussian distributed noise
-
     EVALUATE = False
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
     FILENAME_FIG = 'MountainCarContinuous-v0_01'

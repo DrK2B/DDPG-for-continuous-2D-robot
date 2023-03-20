@@ -14,11 +14,12 @@ def plot_learning_curve(scores, filename, rolling_window_size=100, **hyperparame
     ax.set_title('Running average of previous %d episode rewards' % rolling_window_size)
     plt.xlabel('episode')
     plt.ylabel('average episode reward')
+    plt.grid()
 
     # text box with hyperparameter settings
     infos = '\n'.join((': '.join((param[0], str(param[1]))) for param in hyperparameters.items()))
-    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-    ax.text(0.75, 0.05, infos, transform=ax.transAxes, fontsize=8, verticalalignment='bottom', bbox=props)
+    properties = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    ax.text(0.65, 0.05, infos, transform=ax.transAxes, fontsize=8, verticalalignment='bottom', bbox=properties)
 
     filepath = os.path.join('tmp/figures', filename + '_plot.png')
     # Set environment variable to avoid multiple loading of a shared library
