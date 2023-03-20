@@ -5,7 +5,7 @@ from keras.layers import Dense
 
 
 class CriticNetwork(keras.Model):
-    def __init__(self, layer1_size, layer2_size, layer3_size,
+    def __init__(self, layer1_size, layer2_size,
                  name='critic', chkpt_dir='tmp/model_weights'):
         super().__init__()
         self.model_name = name  # in order to distinguish between target and main networks
@@ -15,14 +15,14 @@ class CriticNetwork(keras.Model):
 
         self.layer1 = Dense(layer1_size, activation='relu')
         self.layer2 = Dense(layer2_size, activation='relu')
-        self.layer3 = Dense(layer3_size, activation='relu')
+        # self.layer3 = Dense(layer3_size, activation='relu')
         self.q = Dense(1)
 
     def call(self, state, action):
-        q_val1 = self.layer1(tf.concat([state, action], axis=-1))  # ToDo: check how input looks like after concat
-        q_val2 = self.layer2(q_val1)
-        q_val3 = self.layer3(q_val2)
-        q_val = self.q(q_val3)
+        q_val = self.layer1(tf.concat([state, action], axis=-1))
+        q_val = self.layer2(q_val)
+        # q_val = self.layer3(q_val)
+        q_val = self.q(q_val)
         return q_val
 
 
@@ -43,7 +43,7 @@ class ActorNetwork(keras.Model):
         self.mu = Dense(self.action_dim, activation='tanh')
 
     def call(self, state):
-        mu_val1 = self.layer1(state)
-        mu_val2 = self.layer2(mu_val1)
-        mu_val = self.action_bound * self.mu(mu_val2)
+        mu_val = self.layer1(state)
+        mu_val = self.layer2(mu_val)
+        mu_val = self.action_bound * self.mu(mu_val)
         return mu_val

@@ -9,7 +9,7 @@ from ActorCritic import ActorNetwork, CriticNetwork
 class ddpgAgent:
     def __init__(self, env, lr_actor=0.001, lr_critic=0.002,
                  discount_factor=0.99, mem_size=1000000, polyak=0.005,
-                 critic_layer_sizes=(50, 50, 50), actor_layer_sizes=(50, 50), batch_size=64):
+                 critic_layer_sizes=(50, 50), actor_layer_sizes=(50, 50), batch_size=64):
         self.discount_factor = discount_factor
         self.polyak = polyak
         self.batch_size = batch_size
@@ -26,10 +26,9 @@ class ddpgAgent:
                                   action_dim=self.action_dim, act_bound=self.action_bound, name='actor')
         self.target_actor = ActorNetwork(layer1_size=actor_layer_sizes[0], layer2_size=actor_layer_sizes[1],
                                          action_dim=self.action_dim, act_bound=self.action_bound, name='target_actor')
-        self.critic = CriticNetwork(layer1_size=critic_layer_sizes[0], layer2_size=critic_layer_sizes[1],
-                                    layer3_size=critic_layer_sizes[2], name='critic')
+        self.critic = CriticNetwork(layer1_size=critic_layer_sizes[0], layer2_size=critic_layer_sizes[1], name='critic')
         self.target_critic = CriticNetwork(layer1_size=critic_layer_sizes[0], layer2_size=critic_layer_sizes[1],
-                                           layer3_size=critic_layer_sizes[2], name='target_critic')
+                                           name='target_critic')
 
         self.actor.compile(optimizer=Adam(learning_rate=lr_actor))
         self.target_actor.compile(optimizer=Adam(learning_rate=lr_actor))
@@ -99,9 +98,8 @@ class ddpgAgent:
         with tf.GradientTape() as tape:
             # computing the targets (y) of mean-squared Bellman error (MSBE) function
             new_target_actions = self.target_actor(new_states)
-            new_target_q_values = tf.squeeze(self.target_critic(
-                new_states, new_target_actions))  # ToDo: might need to change axis back to value 1
-            q_values = tf.squeeze(self.critic(states, actions))  # ToDo:  might need to change axis back to value 1
+            new_target_q_values = tf.squeeze(self.target_critic(new_states, new_target_actions))
+            q_values = tf.squeeze(self.critic(states, actions))
             targets = rewards + self.discount_factor * (1 - dones) * new_target_q_values
 
             critic_loss = keras.losses.MSE(targets, q_values)
