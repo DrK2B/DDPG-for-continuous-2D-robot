@@ -9,11 +9,11 @@ from utils import plot_learning_curve, save_learningCurveData_to_csv, create_uni
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 500,
+        "Episodes": 1000,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only
-        "Critic learning rate": 0.001,
-        "Actor learning rate": 0.002,
+        "Critic learning rate": 0.01,
+        "Actor learning rate": 0.02,
         "Discount factor": 0.99,
         "Memory size": 100000,
         "Polyak averaging": 0.005,
@@ -60,6 +60,7 @@ def DDPG():
         score = 0
         xp_boost = True if (episode <= HPARAMS["Explorations"] and not EVALUATE) else False
 
+        time_len = 0
         for time in range(1, HPARAMS["Time steps"] + 1):
             action = agent.choose_action(state, xp_boost)
             if not EVALUATE:
@@ -73,6 +74,7 @@ def DDPG():
 
             score += reward
             state = new_state
+            time_len = time
 
             if done:
                 break
@@ -86,7 +88,7 @@ def DDPG():
                 print("models' parameters saved at episode: ", episode)
 
         print("Completed in {} steps.... episode: {}/{}, episode reward: {},"
-              " average episode reward: {}".format(time, episode, HPARAMS["Episodes"], score, avg_score))
+              " average episode reward: {}".format(time_len, episode, HPARAMS["Episodes"], score, avg_score))
 
     # Close the environment
     env.close()
