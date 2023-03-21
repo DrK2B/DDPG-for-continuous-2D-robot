@@ -9,7 +9,7 @@ from utils import plot_learning_curve, save_learningCurveData_to_csv, create_uni
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 50,
+        "Episodes": 500,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only
         "Critic learning rate": 0.001,
@@ -24,16 +24,17 @@ def DDPG():
     }
 
     # settings
-    EVALUATE = True
+    EVALUATE = False
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
-    FILENAME_FIG = 'MountainCarContinuous-v0'
+    ENV_NAME = 'Pendulum-v1'
 
     # Create environment, agent and noise process
-    env = gym.make('MountainCarContinuous-v0', render_mode='human')
-    agent = ddpgAgent(env=env, lr_actor=HPARAMS["Actor learning rate"], lr_critic=HPARAMS["Critic learning rate"],
-                      discount_factor=HPARAMS["Discount factor"], mem_size=HPARAMS["Memory size"],
-                      polyak=HPARAMS["Polyak averaging"], critic_layer_sizes=HPARAMS["Critic layer sizes"],
-                      actor_layer_sizes=HPARAMS["Actor layer sizes"], batch_size=HPARAMS["Batch size"])
+    env = gym.make(ENV_NAME, render_mode='human')
+    agent = ddpgAgent(env=env, env_name=ENV_NAME, lr_actor=HPARAMS["Actor learning rate"],
+                      lr_critic=HPARAMS["Critic learning rate"], discount_factor=HPARAMS["Discount factor"],
+                      mem_size=HPARAMS["Memory size"], polyak=HPARAMS["Polyak averaging"],
+                      critic_layer_sizes=HPARAMS["Critic layer sizes"], actor_layer_sizes=HPARAMS["Actor layer sizes"],
+                      batch_size=HPARAMS["Batch size"])
     noise = OUNoise(action_space=env.action_space, max_sigma=HPARAMS["Noise std dev."])
 
     best_score = env.reward_range[0]  # initialize with worst reward value
@@ -91,9 +92,9 @@ def DDPG():
     env.close()
 
     if not EVALUATE:
-        FILENAME_FIG = create_unique_filename(FILENAME_FIG)
-        save_learningCurveData_to_csv(score_history, FILENAME_FIG)
-        plot_learning_curve(score_history, FILENAME_FIG, ROLLING_WINDOW_SIZE_AVG_SCORE, **HPARAMS)
+        ENV_NAME = create_unique_filename(ENV_NAME)
+        save_learningCurveData_to_csv(score_history, ENV_NAME)
+        plot_learning_curve(score_history, ENV_NAME, ROLLING_WINDOW_SIZE_AVG_SCORE, **HPARAMS)
 
     print('--- Finished DDPG ---')
 

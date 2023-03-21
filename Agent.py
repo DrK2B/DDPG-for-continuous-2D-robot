@@ -7,7 +7,7 @@ from ActorCritic import ActorNetwork, CriticNetwork
 
 
 class ddpgAgent:
-    def __init__(self, env, lr_actor=0.001, lr_critic=0.002,
+    def __init__(self, env, env_name, lr_actor=0.001, lr_critic=0.002,
                  discount_factor=0.99, mem_size=1000000, polyak=0.005,
                  critic_layer_sizes=(50, 50), actor_layer_sizes=(50, 50), batch_size=64):
         self.discount_factor = discount_factor
@@ -18,6 +18,7 @@ class ddpgAgent:
         self.memory = ReplayMemory(mem_size, self.state_dim, self.action_dim)
 
         self.env = env
+        self.env_name = env_name
         self.max_action = env.action_space.high[0]
         self.min_action = env.action_space.low[0]
         self.action_bound = np.max(np.abs([self.min_action, self.max_action]))
@@ -60,17 +61,17 @@ class ddpgAgent:
 
     def save_models(self):
         print('... saving model weights ...')
-        self.actor.save_weights(self.actor.checkpoint_file)
-        self.target_actor.save_weights(self.target_actor.checkpoint_file)
-        self.critic.save_weights(self.critic.checkpoint_file)
-        self.target_critic.save_weights(self.target_critic.checkpoint_file)
+        self.actor.save_weights(self.actor.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
+        self.target_actor.save_weights(self.target_actor.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
+        self.critic.save_weights(self.critic.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
+        self.target_critic.save_weights(self.target_critic.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
 
     def load_models(self):
         print('... loading model weights ...')
-        self.actor.load_weights(self.actor.checkpoint_file)
-        self.target_actor.load_weights(self.target_actor.checkpoint_file)
-        self.critic.load_weights(self.critic.checkpoint_file)
-        self.target_critic.load_weights(self.target_critic.checkpoint_file)
+        self.actor.load_weights(self.actor.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
+        self.target_actor.load_weights(self.target_actor.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
+        self.critic.load_weights(self.critic.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
+        self.target_critic.load_weights(self.target_critic.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
 
     def choose_action(self, state, exploration_boost=False):
         # at the start of the training, actions are sampled from a uniform random
