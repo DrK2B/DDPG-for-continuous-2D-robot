@@ -9,7 +9,7 @@ from utils import plot_learningCurve, save_learningCurveData_to_csv, create_uniq
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 1000,
+        "Episodes": 500,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only
         "Critic learning rate": 0.002,
@@ -19,7 +19,7 @@ def DDPG():
         "Polyak averaging": 0.005,
         "Critic layer sizes": (8, 8),  # critic networks are designed to have 2 hidden layers
         "Actor layer sizes": (8, 8),  # actor networks are designed to have 2 hidden layers
-        "Batch size": 64,
+        "Batch size": 128,
         "Noise std. dev.": 0.25  # std dev of zero-mean gaussian distributed noise
     }
 
