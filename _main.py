@@ -20,13 +20,13 @@ def DDPG():
         "Critic layer sizes": (10, 10),  # critic networks are designed to have 2 hidden layers
         "Actor layer sizes": (10, 10),  # actor networks are designed to have 2 hidden layers
         "Batch size": 64,
-        "Noise std dev.": 0.25  # std dev of zero-mean gaussian distributed noise
+        "Noise std. dev.": 0.25  # std dev of zero-mean gaussian distributed noise
     }
 
     # settings
+    ENV_NAME = 'MountainCarContinuous-v0'
     EVALUATE = False
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
-    ENV_NAME = 'Pendulum-v1'
 
     # Create environment, agent and noise process
     env = gym.make(ENV_NAME, render_mode='human')
@@ -35,7 +35,7 @@ def DDPG():
                       mem_size=HPARAMS["Memory size"], polyak=HPARAMS["Polyak averaging"],
                       critic_layer_sizes=HPARAMS["Critic layer sizes"], actor_layer_sizes=HPARAMS["Actor layer sizes"],
                       batch_size=HPARAMS["Batch size"])
-    noise = OUNoise(action_space=env.action_space, max_sigma=HPARAMS["Noise std dev."])
+    noise = OUNoise(action_space=env.action_space, max_sigma=HPARAMS["Noise std. dev."])
 
     best_score = env.reward_range[0]  # initialize with worst reward value
     score_history = []
