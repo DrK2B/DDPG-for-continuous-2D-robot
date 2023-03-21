@@ -12,8 +12,8 @@ def DDPG():
         "Episodes": 1000,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only
-        "Critic learning rate": 0.01,
-        "Actor learning rate": 0.02,
+        "Critic learning rate": 0.02,
+        "Actor learning rate": 0.01,
         "Discount factor": 0.99,
         "Memory size": 100000,
         "Polyak averaging": 0.005,
