@@ -6,11 +6,11 @@ from gymnasium import spaces
 
 
 class Continuous_2D_RobotEnv(gym.Env):
-    metadata = {"render_modes": ["human"], "render_fps": 30}
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
 
     def __init__(self, render_mode=None, size=10):
-        # mass of the agent
-        self.mass = 1
+        self.mass = 1   # mass of the agent
+        self.radius = 0.25  # radius of the robot (circle)
         # states are represented by the (2D) position of the agent
         self.state = None
 
@@ -90,7 +90,7 @@ class Continuous_2D_RobotEnv(gym.Env):
         info = {}
 
         if self.render_mode == "human":
-            self._render_frame()
+            self.render()
 
         return self.state, info
 
@@ -101,9 +101,9 @@ class Continuous_2D_RobotEnv(gym.Env):
     # The ``step`` method usually contains most of the logic of your
     # environment. It accepts an ``action``, computes the state of the
     # environment after applying that action and returns the 5-tuple
-    # ``(observation, reward, done, truncated, info)``. Once the new state of the
+    # ``(observation, reward, terminated, truncated, info)``. Once the new state of the
     # environment has been computed, we can check whether it is a terminal
-    # state, and we set ``done`` accordingly.
+    # state, and we set ``terminated`` accordingly.
 
     def step(self, action):
         # time step
@@ -139,7 +139,7 @@ class Continuous_2D_RobotEnv(gym.Env):
         truncated = False
 
         if self.render_mode == "human":
-            self._render_frame()
+            self.render()
 
         return self.state, reward, terminated, truncated, info
 
@@ -152,10 +152,14 @@ class Continuous_2D_RobotEnv(gym.Env):
     # can use it as a skeleton for your own environments:
 
     def render(self):
-        if self.render_mode == "rgb_array":
-            return self._render_frame()
+        if self.render_mode is None:
+            gym.logger.warn(
+                "You are calling render method without specifying any render mode. "
+                "You can specify the render_mode at initialization, "
+                f'e.g. gym("{self.spec.id}", render_mode="rgb_array")'
+            )
+            return
 
-    def _render_frame(self):
         if self.window is None and self.render_mode == "human":
             pygame.init()
             pygame.display.init()
@@ -165,45 +169,29 @@ class Continuous_2D_RobotEnv(gym.Env):
         if self.clock is None and self.render_mode == "human":
             self.clock = pygame.time.Clock()
 
-        canvas = pygame.Surface((self.window_size, self.window_size))
-        canvas.fill((255, 255, 255))
-        pix_square_size = (
-                self.window_size / self.size
-        )  # The size of a single grid square in pixels
+        scale = self.window_size / (self.max_position - self.min_position)
 
-        # First we draw the target
+        canvas = pygame.Surface((self.window_size, self.window_size))
+        canvas.fill((255, 255, 255))    # white background
+
+        # draw the (green, rectangular) target
         pygame.draw.rect(
             canvas,
-            (255, 0, 0),
+            (0, 255, 0),
             pygame.Rect(
-                pix_square_size * self._target_location,
-                (pix_square_size, pix_square_size),
-            ),
+                scale*self.target_area.low[0], scale*self.target_area.high[1],
+                scale*(self.target_area.high[0]-self.target_area.low[0]),
+                scale*(self.target_area.high[1]-self.target_area.low[1])
+            )
         )
-        # Now we draw the agent
+
+        # draw the (blue, circular) agent
         pygame.draw.circle(
             canvas,
             (0, 0, 255),
-            (self._agent_location + 0.5) * pix_square_size,
-            pix_square_size / 3,
+            (scale*self.state[0], scale*self.state[1]),
+            scale*self.radius
         )
-
-        # Finally, add some gridlines
-        for x in range(self.size + 1):
-            pygame.draw.line(
-                canvas,
-                0,
-                (0, pix_square_size * x),
-                (self.window_size, pix_square_size * x),
-                width=3,
-            )
-            pygame.draw.line(
-                canvas,
-                0,
-                (pix_square_size * x, 0),
-                (pix_square_size * x, self.window_size),
-                width=3,
-            )
 
         if self.render_mode == "human":
             # The following line copies our drawings from `canvas` to the visible window
