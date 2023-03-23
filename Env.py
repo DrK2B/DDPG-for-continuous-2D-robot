@@ -6,7 +6,7 @@ from gymnasium import spaces
 
 
 class Continuous_2D_RobotEnv(gym.Env):
-    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
+    metadata = {"render_modes": ["human"], "render_fps": 30}
 
     def __init__(self, render_mode=None, size=10):
         # mass of the agent
@@ -85,7 +85,7 @@ class Continuous_2D_RobotEnv(gym.Env):
         while target_low[0] <= self.state[0] <= target_high[0] \
                 and target_low[1] <= self.state[1] <= target_high[1]:
             self.state = np.array([self.np_random.uniform(low=self.min_position, high=self.max_position)
-                                   for _ in range(self.observation_space[0])])
+                                   for _ in range(self.observation_space.shape[0])])
 
         info = {}
 
