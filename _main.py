@@ -24,7 +24,8 @@ def DDPG():
     }
 
     # settings
-    ENV_NAME = 'MountainCarContinuous-v0'
+    # ENV_NAME = 'MountainCarContinuous-v0'
+    ENV_NAME = 'gym_examples:2DRobot-v0'
     EVALUATE = False
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
 
@@ -86,7 +87,7 @@ def DDPG():
                 agent.save_models()
                 print("models' parameters saved at episode: ", episode)
 
-        plot_learningCurve(score_history, ROLLING_WINDOW_SIZE_AVG_SCORE, **HPARAMS)
+        # plot_learningCurve(score_history, ROLLING_WINDOW_SIZE_AVG_SCORE, **HPARAMS)
         print("Completed in {} steps.... episode: {}/{}, episode reward: {},"
               " average episode reward: {}".format(time_len, episode, HPARAMS["Episodes"], score, avg_score))
 
