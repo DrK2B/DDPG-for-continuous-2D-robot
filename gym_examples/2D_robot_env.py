@@ -56,27 +56,6 @@ class Continuous_2D_RobotEnv(gym.Env):
         self.clock = None
         self.isOpen = True
 
-    # %%
-    # Reset
-    # ~~~~~
-    #
-    # The ``reset`` method will be called to initiate a new episode. You may
-    # assume that the ``step`` method will not be called before ``reset`` has
-    # been called. Moreover, ``reset`` should be called whenever a done signal
-    # has been issued. Users may pass the ``seed`` keyword to ``reset`` to
-    # initialize any random number generator that is used by the environment
-    # to a deterministic state. It is recommended to use the random number
-    # generator ``self.np_random`` that is provided by the environment’s base
-    # class, ``gymnasium.Env``. If you only use this RNG, you do not need to
-    # worry much about seeding, *but you need to remember to call
-    # ``super().reset(seed=seed)``* to make sure that ``gymnasium.Env``
-    # correctly seeds the RNG. Once this is done, we can randomly set the
-    # state of our environment. In our case, we randomly choose the agent’s
-    # location until it does not lie within the target area.
-    #
-    # The ``reset`` method should return a tuple of the initial observation
-    # and some auxiliary information.
-
     def reset(self, seed=None, options=None):
         # We need the following line to seed self.np_random
         super().reset(seed=seed)
@@ -99,17 +78,6 @@ class Continuous_2D_RobotEnv(gym.Env):
             self.render()
 
         return self.state, info
-
-    # %%
-    # Step
-    # ~~~~
-    #
-    # The ``step`` method usually contains most of the logic of your
-    # environment. It accepts an ``action``, computes the state of the
-    # environment after applying that action and returns the 5-tuple
-    # ``(observation, reward, terminated, truncated, info)``. Once the new state of the
-    # environment has been computed, we can check whether it is a terminal
-    # state, and we set ``terminated`` accordingly.
 
     def step(self, action):
         # time step
@@ -158,17 +126,11 @@ class Continuous_2D_RobotEnv(gym.Env):
         :return: pixel coordinates on canvas
         """
         offset = self.window_size / 2
-        scale = (offset - self.border_thickness - self.agent_radius) / self.max_position
+        scale = (offset - self.border_thickness) / self.max_position
+        # taking agent's radius into account such that agent won't cross the environment's borders
+        scale = scale/(1 + self.agent_radius/self.max_position)
 
         return scale * pos + offset
-
-    # %%
-    # Rendering
-    # ~~~~~~~~~
-    #
-    # Here, we are using PyGame for rendering. A similar approach to rendering
-    # is used in many environments that are included with Gymnasium and you
-    # can use it as a skeleton for your own environments:
 
     def render(self):
         if self.render_mode is None:
@@ -217,8 +179,10 @@ class Continuous_2D_RobotEnv(gym.Env):
             pygame.Rect((target_left, target_top), (target_width, target_height))
         )
 
-        # draw the (blue, circular) agent
+        # draw the (purple, circular) agent
         scale = (self.window_size/2 - self.border_thickness - self.agent_radius)/self.max_position
+        # taking agent's radius into account such that agent won't cross the environment's borders
+        scale = scale / (1 + self.agent_radius / self.max_position)
         pygame.draw.circle(
             self.canvas,
             (255, 0, 255),
@@ -242,15 +206,6 @@ class Continuous_2D_RobotEnv(gym.Env):
             return np.transpose(
                 np.array(pygame.surfarray.pixels3d(self.canvas)), axes=(1, 0, 2)
             )
-
-    # %%
-    # Close
-    # ~~~~~
-    #
-    # The ``close`` method should close any open resources that were used by
-    # the environment. In many cases, you don’t actually have to bother to
-    # implement this method. However, in our example ``render_mode`` may be
-    # ``"human"`` and we might need to close the window that has been opened:
 
     def close(self):
         if self.window is not None:
