@@ -1,7 +1,28 @@
 import numpy as np
 
 
-class OUNoise:
+class Noise:
+    def __init__(self, action_space):
+        self.action_dim = action_space.shape[0]
+        self.low = action_space.low
+        self.high = action_space.high
+
+    def add_noise(self, action):
+        raise NotImplementedError
+
+
+class GaussianNoise(Noise):
+    def __init__(self, action_space, mu=0.0, sigma=0.3):
+        super().__init__(action_space)
+        self.mu = mu
+        self.sigma = sigma
+
+    def add_noise(self, action):
+        noise = np.random.normal(self.mu, self.sigma, self.action_dim)
+        return np.clip(action + noise, self.low, self.high)
+
+
+class OUNoise(Noise):
     """
     This strategy implements the Ornstein-Uhlenbeck process, which adds
     time-correlated noise to the actions taken by the deterministic policy.
@@ -9,7 +30,9 @@ class OUNoise:
     dxt = theta*(mu - xt)*dt + sigma*dWt
     where Wt denotes the Wiener process
     """
+
     def __init__(self, action_space, mu=0.0, theta=0.15, max_sigma=0.3, min_sigma=None, decay_period=100000):
+        super().__init__(action_space)
         self.state = None
         self.mu = mu
         self.theta = theta
@@ -19,9 +42,6 @@ class OUNoise:
             min_sigma = max_sigma
         self.min_sigma = min_sigma
         self.decay_period = decay_period
-        self.action_dim = action_space.shape[0]
-        self.low = action_space.low
-        self.high = action_space.high
         self.reset()
 
     def reset(self):
