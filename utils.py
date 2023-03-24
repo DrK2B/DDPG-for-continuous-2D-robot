@@ -51,5 +51,10 @@ def create_unique_filename(filename):
     :return: new file name with time stamp
     """
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+
+    # example: get rid of 'gym_examples:' in 'gym_examples:2DRobot-v0'
+    if ':' in filename:
+        filename = filename.split(":")[-1]
+
     filename = '_'.join((filename, timestamp))
     return filename
