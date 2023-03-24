@@ -6,7 +6,7 @@ import gymnasium as gym
 from gymnasium import spaces
 
 
-class Continuous_2D_RobotEnv(gym.Env):
+class Continuous_2D_RobotEnv_v0(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 50}
 
     def __init__(self, render_mode=None, size=10):

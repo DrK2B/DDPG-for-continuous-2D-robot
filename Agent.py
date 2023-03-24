@@ -61,17 +61,27 @@ class ddpgAgent:
 
     def save_models(self):
         print('... saving model weights ...')
-        self.actor.save_weights(self.actor.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
-        self.target_actor.save_weights(self.target_actor.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
-        self.critic.save_weights(self.critic.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
-        self.target_critic.save_weights(self.target_critic.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
+
+        env_name = self.env_name
+        if ':' in env_name:
+            env_name = env_name.split(":")[-1]
+
+        self.actor.save_weights(self.actor.checkpoint_file + '_' + env_name + '_ddpg.h5')
+        self.target_actor.save_weights(self.target_actor.checkpoint_file + '_' + env_name + '_ddpg.h5')
+        self.critic.save_weights(self.critic.checkpoint_file + '_' + env_name + '_ddpg.h5')
+        self.target_critic.save_weights(self.target_critic.checkpoint_file + '_' + env_name + '_ddpg.h5')
 
     def load_models(self):
         print('... loading model weights ...')
-        self.actor.load_weights(self.actor.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
-        self.target_actor.load_weights(self.target_actor.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
-        self.critic.load_weights(self.critic.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
-        self.target_critic.load_weights(self.target_critic.checkpoint_file + '_' + self.env_name + '_ddpg.h5')
+
+        env_name = self.env_name
+        if ':' in env_name:
+            env_name = env_name.split(":")[-1]
+
+        self.actor.load_weights(self.actor.checkpoint_file + '_' + env_name + '_ddpg.h5')
+        self.target_actor.load_weights(self.target_actor.checkpoint_file + '_' + env_name + '_ddpg.h5')
+        self.critic.load_weights(self.critic.checkpoint_file + '_' + env_name + '_ddpg.h5')
+        self.target_critic.load_weights(self.target_critic.checkpoint_file + '_' + env_name + '_ddpg.h5')
 
     def choose_action(self, state, exploration_boost=False):
         # at the start of the training, actions are sampled from a uniform random
