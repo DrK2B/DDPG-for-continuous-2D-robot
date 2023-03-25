@@ -7,7 +7,7 @@ from gymnasium import spaces
 
 
 class Continuous_2D_RobotEnv_v0(gym.Env):
-    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 50}
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 100}
 
     def __init__(self, render_mode=None, size=10):
         self.agent_mass = 1  # mass of the agent
@@ -64,7 +64,7 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
         target_low = self.target_area.low
         target_high = self.target_area.high
         self.state = np.array([np.mean([target_low[0], target_high[0]]),
-                               np.mean([target_low[1], target_high[1]])])
+                               np.mean([target_low[1], target_high[1]])], dtype=np.float32)
 
         # Choose the agent's initial position uniformly at random and make sure it is not in the target area
         while target_low[0] <= self.state[0] <= target_high[0] \
@@ -97,8 +97,6 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
         if self.state[1] > self.max_position:
             self.state[1] = self.max_position
 
-        self.state.astype(np.float32)
-
         # check whether terminated
         target_low = self.target_area.low
         target_high = self.target_area.high
@@ -121,9 +119,9 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
 
     def env2canvas(self, pos):
         """
-        transforms environment (1D) coordinate into pixel coordinate on canvas
-        :param pos: 1D coordinate in environment
-        :return: pixel coordinates on canvas
+        transforms environment x or y coordinate into pixel coordinate on canvas
+        :param pos: x or y coordinate in environment
+        :return: pixel coordinate on canvas
         """
         offset = self.window_size / 2
         scale = (offset - self.border_thickness) / self.max_position
@@ -185,7 +183,7 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
         scale = scale / (1 + self.agent_radius / self.max_position)
         pygame.draw.circle(
             self.canvas,
-            (255, 0, 255),
+            (255, 120, 0),
             (self.env2canvas(self.state[0]), self.env2canvas(self.state[1])),
             scale * self.agent_radius
         )

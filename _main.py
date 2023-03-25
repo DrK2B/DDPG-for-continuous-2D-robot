@@ -9,9 +9,9 @@ from utils import plot_learningCurve, save_learningCurveData_to_csv, create_uniq
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 1000,
+        "Episodes": 500,
         "Time steps": 500,
-        "Explorations": 100,  # number of episodes with (random) exploration only
+        "Explorations": 50,  # number of episodes with (random) exploration only
         "Critic learning rate": 0.002,
         "Actor learning rate": 0.001,
         "Discount factor": 0.99,
@@ -20,7 +20,7 @@ def DDPG():
         "Critic layer sizes": (64, 64),  # critic networks are designed to have 2 hidden layers
         "Actor layer sizes": (64, 64),  # actor networks are designed to have 2 hidden layers
         "Batch size": 64,
-        "Noise type": "Gaussian",
+        "Noise type": "OU",
         "Noise std. dev.": 0.05  # std dev of zero-mean gaussian distributed noise
     }
 
@@ -51,7 +51,7 @@ def DDPG():
         for n in range(agent.batch_size):
             state = env.reset()[0]
             action = env.action_space.sample()
-            new_state, reward, done, truncated, _ = env.step(action)
+            new_state, reward, done, _, _ = env.step(action)
             agent.remember(state, action, reward, new_state, done)
 
         agent.learn()
