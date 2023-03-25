@@ -23,13 +23,12 @@ class ddpgAgent:
         self.min_action = env.action_space.low[0]
         self.action_bound = np.max(np.abs([self.min_action, self.max_action]))
 
-        self.actor = ActorNetwork(layer1_size=actor_layer_sizes[0], layer2_size=actor_layer_sizes[1],
-                                  action_dim=self.action_dim, act_bound=self.action_bound, name='actor')
-        self.target_actor = ActorNetwork(layer1_size=actor_layer_sizes[0], layer2_size=actor_layer_sizes[1],
-                                         action_dim=self.action_dim, act_bound=self.action_bound, name='target_actor')
-        self.critic = CriticNetwork(layer1_size=critic_layer_sizes[0], layer2_size=critic_layer_sizes[1], name='critic')
-        self.target_critic = CriticNetwork(layer1_size=critic_layer_sizes[0], layer2_size=critic_layer_sizes[1],
-                                           name='target_critic')
+        self.actor = ActorNetwork(layer_sizes=actor_layer_sizes, action_dim=self.action_dim,
+                                  act_bound=self.action_bound, name='actor')
+        self.target_actor = ActorNetwork(layer_sizes=actor_layer_sizes, action_dim=self.action_dim,
+                                         act_bound=self.action_bound, name='target_actor')
+        self.critic = CriticNetwork(layer_sizes=critic_layer_sizes, name='critic')
+        self.target_critic = CriticNetwork(layer_sizes=critic_layer_sizes, name='target_critic')
 
         self.actor.compile(optimizer=Adam(learning_rate=lr_actor))
         self.target_actor.compile(optimizer=Adam(learning_rate=lr_actor))
