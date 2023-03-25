@@ -7,6 +7,9 @@ class Noise:
         self.low = action_space.low
         self.high = action_space.high
 
+    def reset(self):
+        pass
+
     def add_noise(self, action):
         raise NotImplementedError
 

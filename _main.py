@@ -2,7 +2,7 @@ import gymnasium as gym
 import numpy as np
 import tensorflow as tf
 from Agent import ddpgAgent
-from Noise import OUNoise
+from Noise import OUNoise, GaussianNoise
 from utils import plot_learningCurve, save_learningCurveData_to_csv, create_unique_filename
 
 
@@ -10,8 +10,8 @@ def DDPG():
     # Hyperparameters
     HPARAMS = {
         "Episodes": 1000,
-        "Time steps": 1000,
-        "Explorations": 50,  # number of episodes with (random) exploration only
+        "Time steps": 500,
+        "Explorations": 100,  # number of episodes with (random) exploration only
         "Critic learning rate": 0.002,
         "Actor learning rate": 0.001,
         "Discount factor": 0.99,
@@ -20,7 +20,8 @@ def DDPG():
         "Critic layer sizes": (64, 64),  # critic networks are designed to have 2 hidden layers
         "Actor layer sizes": (64, 64),  # actor networks are designed to have 2 hidden layers
         "Batch size": 64,
-        "Noise std. dev.": 0.25  # std dev of zero-mean gaussian distributed noise
+        "Noise type": "Gaussian",
+        "Noise std. dev.": 0.05  # std dev of zero-mean gaussian distributed noise
     }
 
     # settings
@@ -36,7 +37,9 @@ def DDPG():
                       mem_size=HPARAMS["Memory size"], polyak=HPARAMS["Polyak averaging"],
                       critic_layer_sizes=HPARAMS["Critic layer sizes"], actor_layer_sizes=HPARAMS["Actor layer sizes"],
                       batch_size=HPARAMS["Batch size"])
-    noise = OUNoise(action_space=env.action_space, max_sigma=HPARAMS["Noise std. dev."])
+    noise = OUNoise(action_space=env.action_space, max_sigma=HPARAMS["Noise std. dev."]) \
+        if HPARAMS["Noise type"] == "OU" \
+        else GaussianNoise(action_space=env.action_space, sigma=HPARAMS["Noise std. dev."])
 
     best_score = env.reward_range[0]  # initialize with worst reward value
     score_history = []
@@ -64,7 +67,8 @@ def DDPG():
         for time in range(1, HPARAMS["Time steps"] + 1):
             action = agent.choose_action(state, xp_boost)
             if not EVALUATE:
-                noisy_action = noise.add_noise(action, t=time)
+                noisy_action = noise.add_noise(action, t=time) if HPARAMS["Noise type"] == "OU" \
+                    else noise.add_noise(action)
                 new_state, reward, done, _, _ = env.step(noisy_action)
                 agent.remember(state, tf.squeeze(noisy_action), reward, new_state, done)
                 agent.learn()
