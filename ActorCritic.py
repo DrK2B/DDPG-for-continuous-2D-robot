@@ -7,13 +7,14 @@ from keras.layers import Dense
 class CriticNetwork(keras.Model):
     def __init__(self, layer_sizes, name='critic', chkpt_dir='tmp/models'):
         super().__init__()
-        self.model_name = name  # in order to distinguish between target and main networks
+        self.model_name = name  # in order to distinguish between target and behaviour networks
         self.checkpoint_dir = chkpt_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir, self.model_name)
 
         self.hidden_layers = []
         for i in range(len(layer_sizes)):
             self.hidden_layers.append(Dense(layer_sizes[i], activation='relu'))
+        # output layer
         self.q = Dense(1)
 
     def call(self, state, action):
@@ -28,7 +29,7 @@ class ActorNetwork(keras.Model):
     def __init__(self, layer_sizes, action_dim, act_bound=1, name='actor',
                  chkpt_dir='tmp/models'):
         super().__init__()
-        self.model_name = name
+        self.model_name = name  # in order to distinguish between target and behaviour networks
         self.checkpoint_dir = chkpt_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir, self.model_name)
 
@@ -38,6 +39,7 @@ class ActorNetwork(keras.Model):
         self.hidden_layers = []
         for i in range(len(layer_sizes)):
             self.hidden_layers.append(Dense(layer_sizes[i], activation='relu'))
+        # output layer
         self.mu = Dense(self.action_dim, activation='tanh')
 
     def call(self, state):
