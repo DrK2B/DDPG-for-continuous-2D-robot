@@ -43,7 +43,7 @@ def save_learningCurveData_to_csv(scores, filename):
     filepath = os.path.join('tmp/figures', filename + '_plot_data.csv')
     with open(filepath, 'w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['x', 'y'])
+        writer.writerow(['episode', 'episode reward'])
         for i in range(1, len(scores) + 1):
             writer.writerow([i, scores[i - 1]])
     print("Saved learning curve data")
