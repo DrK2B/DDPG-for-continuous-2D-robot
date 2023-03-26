@@ -78,9 +78,10 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
                                    for _ in range(self.observation_space.shape[0])], dtype=np.float32)
         '''
 
-        # Choose the agent's initial position uniformly at random in the area [-5,-2.5]²
-        self.state = np.array([self.np_random.uniform(low=self.min_position, high=-2.5)
-                               for _ in range(self.observation_space.shape[0])], dtype=np.float32)
+        # Choose the agent's initial position uniformly at random in the start area
+        self.state = np.array([self.np_random.uniform(low=self.start_area.low[0], high=self.start_area.high[0]),
+                               self.np_random.uniform(low=self.start_area.low[1], high=self.start_area.high[1])],
+                              dtype=np.float32)
 
         info = {}
 
@@ -158,9 +159,9 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
 
     def render(self):
         """
-        visualizes gym environment if render mode is human.
+        visualizes gym environment if render mode is "human".
         Note that y coordinate axis of canvas is pointing downwards!!!
-        :return:
+        :return: rgb array if render mode is "rgb_array"
         """
         if self.render_mode is None:
             gym.logger.warn(
