@@ -7,7 +7,7 @@ from gymnasium import spaces
 
 
 class Continuous_2D_RobotEnv_v0(gym.Env):
-    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 50}
 
     def __init__(self, render_mode=None, size=10):
         self.agent_mass = 1  # mass of the agent
@@ -22,6 +22,10 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
         self.min_action = -self.max_action
         self.max_position = 5.0
         self.min_position = -self.max_position
+
+        # start area = [-5,-2.5]²
+        self.start_area = spaces.Box(low=np.array([self.min_position, self.min_position]),
+                                     high=np.array([-2.5, -2.5]), dtype=np.float32)
 
         # target area = [3.0, 4.0]x[2.5, 3.5]
         self.target_area = spaces.Box(low=np.array([3.0, 2.5]),
@@ -60,6 +64,7 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
         # We need the following line to seed self.np_random
         super().reset(seed=seed)
 
+        '''
         # initialization of the agent's state in the middle of the target area
         target_low = self.target_area.low
         target_high = self.target_area.high
@@ -71,12 +76,11 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
                 and target_low[1] <= self.state[1] <= target_high[1]:
             self.state = np.array([self.np_random.uniform(low=self.min_position, high=self.max_position)
                                    for _ in range(self.observation_space.shape[0])], dtype=np.float32)
-
         '''
+
         # Choose the agent's initial position uniformly at random in the area [-5,-2.5]²
         self.state = np.array([self.np_random.uniform(low=self.min_position, high=-2.5)
                                for _ in range(self.observation_space.shape[0])], dtype=np.float32)
-        '''
 
         info = {}
 
@@ -125,10 +129,8 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
                           and target_low[1] <= self.state[1] <= target_high[1])
 
         reward = 0
-        # penalise "(kinetic) energy consumption"
-        # reward = -0.5 * self.agent_mass * (math.pow(action[0], 2) + math.pow(action[1], 2))
         # penalise if not closer to target
-        if new_dist > dist:
+        if new_dist >= dist:
             reward += -1
         # grant large reward if target has been reached
         if terminated:
@@ -142,20 +144,24 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
 
         return self.state, reward, terminated, truncated, info
 
-    def _env2canvas(self, pos):
+    def _env2canvas(self, pos, offset=True):
         """
         transforms environment x or y coordinate into pixel coordinate on canvas
         :param pos: x or y coordinate in environment
+        :param offset: considers offset in position if true
         :return: pixel coordinate on canvas
         """
-        offset = self.window_size / 2
-        scale = (offset - self.border_thickness) / self.max_position
-        # taking agent's radius into account such that agent won't cross the environment's borders
-        scale = scale / (1 + self.agent_radius / self.max_position)
+        offset = self.window_size / 2 if offset else 0
+        scale = (self.window_size - 2*self.border_thickness)/(2*self.max_position + 2*self.agent_radius)
 
         return scale * pos + offset
 
     def render(self):
+        """
+        visualizes gym environment if render mode is human.
+        Note that y coordinate axis of canvas is pointing downwards!!!
+        :return:
+        """
         if self.render_mode is None:
             gym.logger.warn(
                 "You are calling render method without specifying any render mode. "
@@ -191,32 +197,41 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
         gfxdraw.hline(self.canvas, self.border_thickness, self.window_size - self.border_thickness,
                       self.window_size - self.border_thickness, (255, 255, 255))
 
-        # draw the (green, rectangular) target
+        # draw the (blue, rectangular) start area
+        start_left = self._env2canvas(self.start_area.low[0])
+        start_top = self._env2canvas(self.start_area.low[1])
+        start_width = self._env2canvas(self.start_area.high[0]) - self._env2canvas(self.start_area.low[0])
+        start_height = self._env2canvas(self.start_area.high[1]) - self._env2canvas(self.start_area.low[1])
+        pygame.draw.rect(
+            self.canvas,
+            (0, 0, 255),
+            pygame.Rect(start_left, start_top, start_width, start_height)
+        )
+
+        # draw the (green, rectangular) target area
         target_left = self._env2canvas(self.target_area.low[0])
-        target_top = self._env2canvas(self.target_area.high[1])
+        target_top = self._env2canvas(self.target_area.low[1])
         target_width = self._env2canvas(self.target_area.high[0]) - self._env2canvas(self.target_area.low[0])
         target_height = self._env2canvas(self.target_area.high[1]) - self._env2canvas(self.target_area.low[1])
         pygame.draw.rect(
             self.canvas,
             (0, 255, 0),
-            pygame.Rect((target_left, target_top), (target_width, target_height))
+            pygame.Rect(target_left, target_top, target_width, target_height)
         )
 
         # draw the (purple, circular) agent
-        scale = (self.window_size / 2 - self.border_thickness - self.agent_radius) / self.max_position
-        # taking agent's radius into account such that agent won't cross the environment's borders
-        scale = scale / (1 + self.agent_radius / self.max_position)
         pygame.draw.circle(
             self.canvas,
             (255, 120, 0),
             (self._env2canvas(self.state[0]), self._env2canvas(self.state[1])),
-            scale * self.agent_radius
+            self._env2canvas(self.agent_radius, offset=False)
         )
 
         # change y direction of canvas from downward to upward
         self.canvas = pygame.transform.flip(self.canvas, False, True)
         # put canvas onto window
         self.window.blit(self.canvas, (0, 0))
+
         if self.render_mode == "human":
             # update window
             pygame.event.pump()
