@@ -21,7 +21,7 @@ def DDPG():
         "Actor layer sizes": (64, 64),  # number of hidden layers is variable and corresponds to tuple length
         "Batch size": 64,
         "Noise type": "Gaussian",
-        "Noise std. dev.": 0.25  # std dev of zero-mean gaussian distributed noise
+        "Noise std. dev.": 0.1  # std dev of zero-mean gaussian distributed noise
     }
 
     # settings

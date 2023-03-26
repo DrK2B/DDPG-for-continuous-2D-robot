@@ -7,7 +7,7 @@ from gymnasium import spaces
 
 
 class Continuous_2D_RobotEnv_v0(gym.Env):
-    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 100}
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
 
     def __init__(self, render_mode=None, size=10):
         self.agent_mass = 1  # mass of the agent
@@ -124,13 +124,15 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
         terminated = bool(target_low[0] <= self.state[0] <= target_high[0]
                           and target_low[1] <= self.state[1] <= target_high[1])
 
+        reward = 0
         # penalise "(kinetic) energy consumption"
-        reward = -0.5 * self.agent_mass * (math.pow(action[0], 2) + math.pow(action[1], 2))
-        # grant reward if closer to target, otherwise penalise
-        reward += 1 if new_dist < dist else -1
-        # grant reward if target has been reached
+        # reward = -0.5 * self.agent_mass * (math.pow(action[0], 2) + math.pow(action[1], 2))
+        # penalise if not closer to target
+        if new_dist > dist:
+            reward += -1
+        # grant large reward if target has been reached
         if terminated:
-            reward += 1000
+            reward += 100
 
         info = {}
         truncated = False
