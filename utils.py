@@ -34,6 +34,11 @@ def plot_learningCurve(scores, rolling_window_size=100, filename=None, **hyperpa
     plt.show()
 
 
+def plot_agentTrajectory():
+    # ToDo: Implementation
+    pass
+
+
 def save_learningCurveData_to_csv(scores, filename):
     filepath = os.path.join('tmp/figures', filename + '_plot_data.csv')
     with open(filepath, 'w', newline='') as file:

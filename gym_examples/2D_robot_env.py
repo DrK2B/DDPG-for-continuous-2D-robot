@@ -28,7 +28,7 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
                                       high=np.array([4.0, 3.5]), dtype=np.float32)
 
         self.size = size  # The size of the square environment
-        self.window_size = 600  # The size of the PyGame window
+        self.window_size = 500  # The size of the PyGame window
         self.border_thickness = 50
         self.canvas = None
 
@@ -72,6 +72,12 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
             self.state = np.array([self.np_random.uniform(low=self.min_position, high=self.max_position)
                                    for _ in range(self.observation_space.shape[0])], dtype=np.float32)
 
+        '''
+        # Choose the agent's initial position uniformly at random in the area [-5,-2.5]²
+        self.state = np.array([self.np_random.uniform(low=self.min_position, high=-2.5)
+                               for _ in range(self.observation_space.shape[0])], dtype=np.float32)
+        '''
+
         info = {}
 
         if self.render_mode == "human":
@@ -79,11 +85,23 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
 
         return self.state, info
 
+    def _calcDist2Target(self):
+        target_low = self.target_area.low
+        target_high = self.target_area.high
+
+        # the center of the target area
+        centerTarget = np.array([np.mean([target_low[0], target_high[0]]),
+                                 np.mean([target_low[1], target_high[1]])], dtype=np.float32)
+
+        dist = np.linalg.norm(centerTarget - self.state)
+        return dist
+
     def step(self, action):
-        # time step
-        dt = self.time_step
+        # distance to target
+        dist = self._calcDist2Target()
 
         # update state
+        dt = self.time_step
         self.state[0] += dt * action[0]
         self.state[1] += dt * action[1]
 
@@ -97,14 +115,19 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
         if self.state[1] > self.max_position:
             self.state[1] = self.max_position
 
+        # new distance to target
+        new_dist = self._calcDist2Target()
+
         # check whether terminated
         target_low = self.target_area.low
         target_high = self.target_area.high
         terminated = bool(target_low[0] <= self.state[0] <= target_high[0]
                           and target_low[1] <= self.state[1] <= target_high[1])
 
-        # penalise the increase in (kinetic) energy consumption
+        # penalise "(kinetic) energy consumption"
         reward = -0.5 * self.agent_mass * (math.pow(action[0], 2) + math.pow(action[1], 2))
+        # grant reward if closer to target, otherwise penalise
+        reward += 1 if new_dist < dist else -1
         # grant reward if target has been reached
         if terminated:
             reward += 1000
@@ -117,7 +140,7 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
 
         return self.state, reward, terminated, truncated, info
 
-    def env2canvas(self, pos):
+    def _env2canvas(self, pos):
         """
         transforms environment x or y coordinate into pixel coordinate on canvas
         :param pos: x or y coordinate in environment
@@ -126,7 +149,7 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
         offset = self.window_size / 2
         scale = (offset - self.border_thickness) / self.max_position
         # taking agent's radius into account such that agent won't cross the environment's borders
-        scale = scale/(1 + self.agent_radius/self.max_position)
+        scale = scale / (1 + self.agent_radius / self.max_position)
 
         return scale * pos + offset
 
@@ -167,10 +190,10 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
                       self.window_size - self.border_thickness, (255, 255, 255))
 
         # draw the (green, rectangular) target
-        target_left = self.env2canvas(self.target_area.low[0])
-        target_top = self.env2canvas(self.target_area.high[1])
-        target_width = self.env2canvas(self.target_area.high[0]) - self.env2canvas(self.target_area.low[0])
-        target_height = self.env2canvas(self.target_area.high[1]) - self.env2canvas(self.target_area.low[1])
+        target_left = self._env2canvas(self.target_area.low[0])
+        target_top = self._env2canvas(self.target_area.high[1])
+        target_width = self._env2canvas(self.target_area.high[0]) - self._env2canvas(self.target_area.low[0])
+        target_height = self._env2canvas(self.target_area.high[1]) - self._env2canvas(self.target_area.low[1])
         pygame.draw.rect(
             self.canvas,
             (0, 255, 0),
@@ -178,13 +201,13 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
         )
 
         # draw the (purple, circular) agent
-        scale = (self.window_size/2 - self.border_thickness - self.agent_radius)/self.max_position
+        scale = (self.window_size / 2 - self.border_thickness - self.agent_radius) / self.max_position
         # taking agent's radius into account such that agent won't cross the environment's borders
         scale = scale / (1 + self.agent_radius / self.max_position)
         pygame.draw.circle(
             self.canvas,
             (255, 120, 0),
-            (self.env2canvas(self.state[0]), self.env2canvas(self.state[1])),
+            (self._env2canvas(self.state[0]), self._env2canvas(self.state[1])),
             scale * self.agent_radius
         )
 
