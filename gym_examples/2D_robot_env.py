@@ -64,20 +64,6 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
         # We need the following line to seed self.np_random
         super().reset(seed=seed)
 
-        '''
-        # initialization of the agent's state in the middle of the target area
-        target_low = self.target_area.low
-        target_high = self.target_area.high
-        self.state = np.array([np.mean([target_low[0], target_high[0]]),
-                               np.mean([target_low[1], target_high[1]])], dtype=np.float32)
-
-        # Choose the agent's initial position uniformly at random and make sure it is not in the target area
-        while target_low[0] <= self.state[0] <= target_high[0] \
-                and target_low[1] <= self.state[1] <= target_high[1]:
-            self.state = np.array([self.np_random.uniform(low=self.min_position, high=self.max_position)
-                                   for _ in range(self.observation_space.shape[0])], dtype=np.float32)
-        '''
-
         # Choose the agent's initial position uniformly at random in the start area
         self.state = np.array([self.np_random.uniform(low=self.start_area.low[0], high=self.start_area.high[0]),
                                self.np_random.uniform(low=self.start_area.low[1], high=self.start_area.high[1])],
