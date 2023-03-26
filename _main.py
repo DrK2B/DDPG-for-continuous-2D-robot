@@ -20,14 +20,14 @@ def DDPG():
         "Critic layer sizes": (64, 64),  # number of hidden layers is variable and corresponds to tuple length
         "Actor layer sizes": (64, 64),  # number of hidden layers is variable and corresponds to tuple length
         "Batch size": 64,
-        "Noise type": "OU",
+        "Noise type": "Gaussian",
         "Noise std. dev.": 0.25  # std dev of zero-mean gaussian distributed noise
     }
 
     # settings
     # ENV_NAME = 'MountainCarContinuous-v0'
     ENV_NAME = 'gym_examples:2DRobot-v0'
-    EVALUATE = True
+    EVALUATE = False
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
 
     # Create environment, agent and noise process
