@@ -17,11 +17,12 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
 
         # states are represented by the (2D) position of the agent
         self.state = None
-
-        self.max_action = 1.0
-        self.min_action = -self.max_action
         self.max_position = 5.0
         self.min_position = -self.max_position
+        # Observations are the agent's position in the square 2D environment
+        self.observation_space = spaces.Box(low=self.min_position,
+                                            high=self.max_position,
+                                            shape=(2,), dtype=np.float32)
 
         # start area = [-5,-2.5]²
         self.start_area = spaces.Box(low=np.array([self.min_position, self.min_position]),
@@ -31,19 +32,16 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
         self.target_area = spaces.Box(low=np.array([3.0, 2.5]),
                                       high=np.array([4.0, 3.5]), dtype=np.float32)
 
+        self.max_action = 1.0
+        self.min_action = -self.max_action
+        # The agent can perform actions with continuous value
+        self.action_space = spaces.Box(low=self.min_action, high=self.max_action,
+                                       shape=(2,), dtype=np.float32)
+
         self.size = size  # The size of the square environment
         self.window_size = 500  # The size of the PyGame window
         self.border_thickness = 50
         self.canvas = None
-
-        # Observations are the agent's position in the square 2D environment.
-        self.observation_space = spaces.Box(low=self.min_position,
-                                            high=self.max_position,
-                                            shape=(2,), dtype=np.float32)
-
-        # The agent can perform actions with continuous value
-        self.action_space = spaces.Box(low=self.min_action, high=self.max_action,
-                                       shape=(2,), dtype=np.float32)
 
         assert render_mode is None or render_mode in self.metadata["render_modes"], \
             "Passed render mode is not valid"
