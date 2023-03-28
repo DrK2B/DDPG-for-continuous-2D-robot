@@ -19,7 +19,7 @@ def DDPG():
         "Polyak averaging": 0.005,
         "Critic layer sizes": (64, 64),  # number of hidden layers is variable and corresponds to tuple length
         "Actor layer sizes": (64, 64),  # number of hidden layers is variable and corresponds to tuple length
-        "Batch size": 64,
+        "Batch size": 128,
         "Noise type": "Gaussian",
         "Noise std. dev.": 0.25  # std dev of zero-mean gaussian distributed noise
     }
@@ -27,11 +27,12 @@ def DDPG():
     # settings
     # ENV_NAME = 'MountainCarContinuous-v0'
     ENV_NAME = 'gym_examples:2DRobot-v0'
-    EVALUATE = True
+    render_mode = None      # options: None, 'human', 'rgb_array'
+    EVALUATE = False
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
 
     # Create environment, agent and noise process
-    env = gym.make(ENV_NAME, render_mode='human')
+    env = gym.make(ENV_NAME, render_mode=render_mode)
     agent = ddpgAgent(env=env, env_name=ENV_NAME, lr_actor=HPARAMS["Actor learning rate"],
                       lr_critic=HPARAMS["Critic learning rate"], discount_factor=HPARAMS["Discount factor"],
                       mem_size=HPARAMS["Memory size"], polyak=HPARAMS["Polyak averaging"],
