@@ -15,7 +15,7 @@ class Noise:
 
 
 class GaussianNoise(Noise):
-    def __init__(self, action_space, mu=0.0, sigma=0.3):
+    def __init__(self, action_space, mu=0.0, sigma=0.2):
         super().__init__(action_space)
         self.mu = mu
         self.sigma = sigma
@@ -34,7 +34,7 @@ class OUNoise(Noise):
     where Wt denotes the Wiener process
     """
 
-    def __init__(self, action_space, mu=0.0, theta=0.15, max_sigma=0.3, min_sigma=None, decay_period=100000):
+    def __init__(self, action_space, mu=0.0, theta=0.15, max_sigma=0.2, min_sigma=None, decay_period=100000):
         super().__init__(action_space)
         self.state = None
         self.mu = mu
