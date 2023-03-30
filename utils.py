@@ -67,6 +67,11 @@ def plot_agentTrajectory(time_steps, states, env, env_name):
 
         plt.show()
     else:  # 2D robot environment
+        x_states = states[0]
+        y_states = states[1]
+        x_states_trimmed = np.trim_zeros(x_states)
+        y_states_trimmed = np.trim_zeros(y_states)
+
         # plot start area
         start_width = env.start_area.high[0] - env.start_area.low[0]
         start_height = env.start_area.high[1] - env.start_area.low[1]
@@ -82,7 +87,11 @@ def plot_agentTrajectory(time_steps, states, env, env_name):
         plt.gca().add_patch(target)
 
         # plot s2 over s1
-        plt.scatter(states[0], states[1], color='orange', label='trajectory', marker='.')
+        x_states = states[0]
+        y_states = states[1]
+        x_states_trimmed = np.trim_zeros(x_states)  # remove trailing zeros
+        y_states_trimmed = np.trim_zeros(y_states)  # remove trailing zeros
+        plt.scatter(x_states_trimmed, y_states_trimmed, color='orange', label='trajectory', marker='.')
 
         # plot details
         x_min, x_max = env.min_position, env.max_position

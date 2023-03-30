@@ -99,8 +99,7 @@ def DDPG():
 
         if EVALUATE:
             # trajectory plotting
-            trimmed_states = np.trim_zeros(states, 'r')
-            plot_agentTrajectory(time_steps, trimmed_states, env, ENV_NAME)
+            plot_agentTrajectory(time_steps, states, env, ENV_NAME)
 
             time_steps_episodes.append(np.copy(time_steps))
             states_episodes.append(np.copy(states))
