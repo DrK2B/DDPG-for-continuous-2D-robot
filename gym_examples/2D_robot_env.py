@@ -1,9 +1,8 @@
+import gymnasium as gym
 import numpy as np
 import pygame
-from pygame import gfxdraw
-import math
-import gymnasium as gym
 from gymnasium import spaces
+from pygame import gfxdraw
 
 
 class Continuous_2D_RobotEnv_v0(gym.Env):
@@ -204,7 +203,7 @@ class Continuous_2D_RobotEnv_v0(gym.Env):
             pygame.Rect(target_left, target_top, target_width, target_height)
         )
 
-        # draw the (purple, circular) agent
+        # draw the (orange, circular) agent
         pygame.draw.circle(
             self.canvas,
             (255, 120, 0),
