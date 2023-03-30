@@ -38,7 +38,7 @@ def plot_learningCurve(scores, rolling_window_size=100, filename=None, **hyperpa
 
 def plot_agentTrajectory(time_steps, states, env, env_name):
     # ToDo: Implementation
-    # first step: plot trajectory of one evaluation episode
+    # first step: plot trajectory of one evaluation episode (DONE)
     # second step: plot several episode trajectory in the same plot
 
     assert env_name in ('MountainCarContinuous-v0', 'gym_examples:2DRobot-v0'), \
@@ -55,16 +55,18 @@ def plot_agentTrajectory(time_steps, states, env, env_name):
         plt.plot(time_steps, [target_pos for _ in range(len(time_steps))], color='green', label='target')
 
         # details
+        t_min, t_max = 0, 500   # number of time steps
+        y_min, y_max = env.min_position, env.max_position
+        plt.xlim([t_min - 1, t_max + 1])
+        plt.ylim([y_min - 1, y_max + 1])
+
         plt.xlabel('time step')
         plt.ylabel("agent's position")
         plt.title("The agent's trajectory in %s" % env_name)
-        plt.legend()
+        plt.legend(loc='upper left')
 
         plt.show()
     else:  # 2D robot environment
-        # reshape states array [[s11, s12], [s21, s22], ...,[sn1, sn2]] to [[s11, s21, ..., sn1], [s12, s22, ..., sn2]]
-        states = np.reshape(states, (states.shape[1], states.shape[0]))
-
         # plot start area
         start_width = env.start_area.high[0] - env.start_area.low[0]
         start_height = env.start_area.high[1] - env.start_area.low[1]
@@ -80,12 +82,17 @@ def plot_agentTrajectory(time_steps, states, env, env_name):
         plt.gca().add_patch(target)
 
         # plot s2 over s1
-        plt.scatter(states[0], states[1], color='blue', label='trajectory')
+        plt.scatter(states[0], states[1], color='orange', label='trajectory', marker='.')
 
-        # details
+        # plot details
+        x_min, x_max = env.min_position, env.max_position
+        y_min, y_max = env.min_position, env.max_position
+        plt.xlim([x_min - 1, x_max + 1])
+        plt.ylim([y_min - 1, y_max + 1])
+
         plt.xlabel("agent's x position")
         plt.ylabel("agent's y position")
-        plt.title("The agent's trajectory in the environment %s" % env_name)
+        plt.title("The agent's trajectory in the environment %s" % env_name.split(':')[-1])
         plt.legend()
 
         plt.show()
