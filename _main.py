@@ -9,7 +9,7 @@ from utils import plot_learningCurve, save_learningCurveData_to_csv, create_uniq
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 5,
+        "Episodes": 1,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only (and no exploitation)
         "Critic learning rate": 0.002,
@@ -44,13 +44,12 @@ def DDPG():
 
     best_score = env.reward_range[0]  # initialize with worst reward value
     score_history = []
+    # lists for trajectory plotting
+    time_steps_episodes = []
+    states_episodes = []
 
     # start training or evaluation
     if EVALUATE:
-        # lists for trajectory plotting
-        time_steps_episodes = []
-        states_episodes = []
-
         # model weights cannot be directly load into an empty new model; hence, it is necessary to initialize the
         # model parameters by learning from randomly generated state transitions
         for _ in range(agent.batch_size):
@@ -68,9 +67,11 @@ def DDPG():
         score = 0
         xp_boost = True if (episode <= HPARAMS["Explorations"] and not EVALUATE) else False
 
-        if EVALUATE:
-            time_steps = []
-            states = []
+        # initializations for trajectory plotting
+        time_steps = [0]
+        states = np.zeros((env.observation_space.shape[0], HPARAMS["Time steps"]+1), dtype=np.float32)
+        states[0][0] = state[0]
+        states[1][0] = state[1]
 
         time_len = 0
         for time in range(1, HPARAMS["Time steps"] + 1):
@@ -84,8 +85,10 @@ def DDPG():
                 # print("time: %d | action: %f | reward: %f" % (time, noisy_action, reward))
             else:
                 new_state, reward, done, _, _ = env.step(action)
+
                 time_steps.append(time)
-                states.append(state)
+                states[0][time] = np.copy(state[0])
+                states[1][time] = np.copy(state[1])
 
             score += reward
             state = new_state
@@ -96,10 +99,11 @@ def DDPG():
 
         if EVALUATE:
             # trajectory plotting
-            states = np.vstack(states)
-            time_steps_episodes.append(time_steps)
-            states_episodes.append(states)
-            plot_agentTrajectory(time_steps, states, env, ENV_NAME)
+            trimmed_states = np.trim_zeros(states, 'r')
+            plot_agentTrajectory(time_steps, trimmed_states, env, ENV_NAME)
+
+            time_steps_episodes.append(np.copy(time_steps))
+            states_episodes.append(np.copy(states))
 
         score_history.append(score)
         avg_score = np.mean(score_history[-ROLLING_WINDOW_SIZE_AVG_SCORE:])
