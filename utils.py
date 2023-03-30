@@ -47,7 +47,7 @@ def plot_agentTrajectory(time_steps, states, env, env_name):
     # plotting
     if env_name == 'MountainCarContinuous-v0':
         # only consider first state component at plotting
-        states = [states[i][0] for i in range(len(states))]
+        states = [states[0][i] for i in range(len(states[0]))]
         plt.plot(time_steps, states, color='blue', label='trajectory')
 
         # plot target position
@@ -67,11 +67,6 @@ def plot_agentTrajectory(time_steps, states, env, env_name):
 
         plt.show()
     else:  # 2D robot environment
-        x_states = states[0]
-        y_states = states[1]
-        x_states_trimmed = np.trim_zeros(x_states)
-        y_states_trimmed = np.trim_zeros(y_states)
-
         # plot start area
         start_width = env.start_area.high[0] - env.start_area.low[0]
         start_height = env.start_area.high[1] - env.start_area.low[1]
