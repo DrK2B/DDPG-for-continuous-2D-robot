@@ -15,11 +15,11 @@ def DDPG():
         "Critic learning rate": 0.002,
         "Actor learning rate": 0.001,
         "Discount factor": 0.99,
-        "Memory size": 100000,
+        "Memory size": 1000000,
         "Polyak averaging": 0.005,
         "Critic layer sizes": (64, 64),  # number of hidden layers is variable and corresponds to tuple length
         "Actor layer sizes": (64, 64),  # number of hidden layers is variable and corresponds to tuple length
-        "Batch size": 128,
+        "Batch size": 64,
         "Noise type": "Gaussian",
         "Noise std. dev.": 0.25  # std dev of zero-mean gaussian distributed noise
     }
