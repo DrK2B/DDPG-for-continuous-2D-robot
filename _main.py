@@ -3,13 +3,13 @@ import numpy as np
 import tensorflow as tf
 from Agent import ddpgAgent
 from Noise import OUNoise, GaussianNoise
-from utils import plot_learningCurve, save_learningCurveData_to_csv, create_unique_filename
+from utils import plot_learningCurve, save_learningCurveData_to_csv, create_unique_filename, plot_agentTrajectory
 
 
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 1000,
+        "Episodes": 5,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only (and no exploitation)
         "Critic learning rate": 0.002,
@@ -20,15 +20,15 @@ def DDPG():
         "Critic layer sizes": (64, 64),  # number of hidden layers is variable and corresponds to tuple length
         "Actor layer sizes": (64, 64),  # number of hidden layers is variable and corresponds to tuple length
         "Batch size": 64,
-        "Noise type": "Gaussian",
+        "Noise type": "OU",
         "Noise std. dev.": 0.25  # std dev of zero-mean gaussian distributed noise
     }
 
     # settings
     # ENV_NAME = 'MountainCarContinuous-v0'
     ENV_NAME = 'gym_examples:2DRobot-v0'
-    render_mode = None      # options: None, 'human', 'rgb_array'
-    EVALUATE = False
+    render_mode = 'human'  # options: None, 'human', 'rgb_array'
+    EVALUATE = True
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
 
     # Create environment, agent and noise process
@@ -47,6 +47,10 @@ def DDPG():
 
     # start training or evaluation
     if EVALUATE:
+        # lists for trajectory plotting
+        time_steps_episodes = []
+        states_episodes = []
+
         # model weights cannot be directly load into an empty new model; hence, it is necessary to initialize the
         # model parameters by learning from randomly generated state transitions
         for _ in range(agent.batch_size):
@@ -64,6 +68,10 @@ def DDPG():
         score = 0
         xp_boost = True if (episode <= HPARAMS["Explorations"] and not EVALUATE) else False
 
+        if EVALUATE:
+            time_steps = []
+            states = []
+
         time_len = 0
         for time in range(1, HPARAMS["Time steps"] + 1):
             action = agent.choose_action(state, xp_boost)
@@ -76,6 +84,8 @@ def DDPG():
                 # print("time: %d | action: %f | reward: %f" % (time, noisy_action, reward))
             else:
                 new_state, reward, done, _, _ = env.step(action)
+                time_steps.append(time)
+                states.append(state)
 
             score += reward
             state = new_state
@@ -83,6 +93,13 @@ def DDPG():
 
             if done:
                 break
+
+        if EVALUATE:
+            # trajectory plotting
+            states = np.vstack(states)
+            time_steps_episodes.append(time_steps)
+            states_episodes.append(states)
+            plot_agentTrajectory(time_steps, states, env, ENV_NAME)
 
         score_history.append(score)
         avg_score = np.mean(score_history[-ROLLING_WINDOW_SIZE_AVG_SCORE:])
@@ -104,6 +121,9 @@ def DDPG():
         filename = create_unique_filename(ENV_NAME)
         save_learningCurveData_to_csv(score_history, filename)
         plot_learningCurve(score_history, ROLLING_WINDOW_SIZE_AVG_SCORE, filename=filename, **HPARAMS)
+    else:
+        # plot trajectories of all episodes
+        pass
 
     print('--- Finished DDPG ---')
 

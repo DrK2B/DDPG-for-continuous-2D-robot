@@ -6,10 +6,12 @@ from datetime import datetime
 
 
 def plot_learningCurve(scores, rolling_window_size=100, filename=None, **hyperparameters):
+    # score averaging
     running_avg = np.zeros(len(scores))
     for i in range(len(running_avg)):
         running_avg[i] = np.mean(scores[max(0, i - rolling_window_size):(i + 1)])
 
+    # plotting
     fig, ax = plt.subplots()
     ax.plot(range(1, len(running_avg) + 1), running_avg)
     ax.set_title('Running average of previous %d episode rewards' % rolling_window_size)
@@ -34,9 +36,59 @@ def plot_learningCurve(scores, rolling_window_size=100, filename=None, **hyperpa
     plt.show()
 
 
-def plot_agentTrajectory():
+def plot_agentTrajectory(time_steps, states, env, env_name):
     # ToDo: Implementation
-    pass
+    # first step: plot trajectory of one evaluation episode
+    # second step: plot several episode trajectory in the same plot
+
+    assert env_name in ('MountainCarContinuous-v0', 'gym_examples:2DRobot-v0'), \
+        "plot_agentTrajectory: The specified environment does not exist."
+
+    # plotting
+    if env_name == 'MountainCarContinuous-v0':
+        # only consider first state component at plotting
+        states = [states[i][0] for i in range(len(states))]
+        plt.plot(time_steps, states, color='blue', label='trajectory')
+
+        # plot target position
+        target_pos = env.goal_position
+        plt.plot(time_steps, [target_pos for _ in range(len(time_steps))], color='green', label='target')
+
+        # details
+        plt.xlabel('time step')
+        plt.ylabel("agent's position")
+        plt.title("The agent's trajectory in %s" % env_name)
+        plt.legend()
+
+        plt.show()
+    else:  # 2D robot environment
+        # reshape states array [[s11, s12], [s21, s22], ...,[sn1, sn2]] to [[s11, s21, ..., sn1], [s12, s22, ..., sn2]]
+        states = np.reshape(states, (states.shape[1], states.shape[0]))
+
+        # plot start area
+        start_width = env.start_area.high[0] - env.start_area.low[0]
+        start_height = env.start_area.high[1] - env.start_area.low[1]
+        start = plt.Rectangle((env.start_area.low[0], env.start_area.low[1]), start_width, start_height,
+                              label='start area', linewidth=2, edgecolor='b', facecolor='none')
+        plt.gca().add_patch(start)
+
+        # plot target area
+        target_width = env.target_area.high[0] - env.target_area.low[0]
+        target_height = env.target_area.high[1] - env.target_area.low[1]
+        target = plt.Rectangle((env.target_area.low[0], env.target_area.low[1]), target_width, target_height,
+                               label='target area', linewidth=2, edgecolor='g', facecolor='none')
+        plt.gca().add_patch(target)
+
+        # plot s2 over s1
+        plt.scatter(states[0], states[1], color='blue', label='trajectory')
+
+        # details
+        plt.xlabel("agent's x position")
+        plt.ylabel("agent's y position")
+        plt.title("The agent's trajectory in the environment %s" % env_name)
+        plt.legend()
+
+        plt.show()
 
 
 def save_learningCurveData_to_csv(scores, filename):
