@@ -9,7 +9,7 @@ from utils import plot_learningCurve, save_learningCurveData_to_csv, create_uniq
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 1000,
+        "Episodes": 1,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only (and no exploitation)
         "Critic learning rate": 0.002,
@@ -28,7 +28,7 @@ def DDPG():
     ENV_NAME = 'MountainCarContinuous-v0'
     # ENV_NAME = 'gym_examples:2DRobot-v0'
     render_mode = 'human'  # options: None, 'human', 'rgb_array'
-    EVALUATE = False
+    EVALUATE = True
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
 
     # Create environment, agent and noise process
@@ -65,7 +65,6 @@ def DDPG():
         xp_boost = True if (episode <= HPARAMS["Explorations"] and not EVALUATE) else False
 
         # initializations for trajectory plotting
-        time_steps = [0]
         states = np.zeros((env.observation_space.shape[0], HPARAMS["Time steps"]+1), dtype=np.float32)
         states[0][0] = state[0]
         states[1][0] = state[1]
@@ -83,7 +82,6 @@ def DDPG():
             else:
                 new_state, reward, done, _, _ = env.step(action)
 
-                time_steps.append(time)
                 states[0][time] = np.copy(state[0])
                 states[1][time] = np.copy(state[1])
 
@@ -104,7 +102,7 @@ def DDPG():
 
         if EVALUATE:
             # trajectory plotting
-            plot_agentTrajectory(time_steps, states, env, ENV_NAME, save=True)
+            plot_agentTrajectory(states, env, ENV_NAME, save=True)
 
         # plot_learningCurve(score_history, ROLLING_WINDOW_SIZE_AVG_SCORE, **HPARAMS)
         print("Completed in {} steps.... episode: {}/{}, episode reward: {},"

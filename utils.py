@@ -36,12 +36,14 @@ def plot_learningCurve(scores, rolling_window_size=100, filename=None, **hyperpa
     plt.show()
 
 
-def plot_agentTrajectory(time_steps, states, env, env_name, save=False):
+def plot_agentTrajectory(states, env, env_name, save=False):
     assert env_name in ('MountainCarContinuous-v0', 'gym_examples:2DRobot-v0'), \
         "plot_agentTrajectory: The specified environment does not exist."
 
     # plotting
     if env_name == 'MountainCarContinuous-v0':
+        time_steps = [t for t in range(501)]
+
         # plot environment boundaries
         lb = [env.min_position for _ in range(len(time_steps))]
         plt.plot(time_steps, lb, color='black', label='lower boundary')
@@ -50,7 +52,9 @@ def plot_agentTrajectory(time_steps, states, env, env_name, save=False):
 
         # only consider first state component at plotting
         states = [states[0][i] for i in range(len(states[0]))]
-        plt.plot(time_steps, states, color='orange', label='trajectory')
+        while states and states[-1] == 0:
+            states.pop()
+        plt.plot([t for t in range(len(states))], states, color='orange', label='trajectory')
 
         # plot target position
         target_pos = env.goal_position
@@ -58,9 +62,9 @@ def plot_agentTrajectory(time_steps, states, env, env_name, save=False):
 
         # details
         t_min, t_max = 0, 500   # number of time steps
-        y_min, y_max = env.min_position, env.max_position
+        y_min, y_max = -1.5, 1.5
         plt.xlim([t_min - 1, t_max + 1])
-        plt.ylim([y_min - 1, y_max + 1])
+        plt.ylim([y_min, y_max])
 
         plt.xlabel('time step')
         plt.ylabel("agent's position")
