@@ -9,7 +9,7 @@ from utils import plot_learningCurve, save_learningCurveData_to_csv, create_uniq
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 3,
+        "Episodes": 1000,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only (and no exploitation)
         "Critic learning rate": 0.002,
@@ -17,18 +17,18 @@ def DDPG():
         "Discount factor": 0.99,
         "Memory size": 1000000,
         "Polyak averaging": 0.005,
-        "Critic layer sizes": (64, 64),  # number of hidden layers is variable and corresponds to tuple length
-        "Actor layer sizes": (64, 64),  # number of hidden layers is variable and corresponds to tuple length
+        "Critic layer sizes": (8, 8),  # number of hidden layers is variable and corresponds to tuple length
+        "Actor layer sizes": (8, 8),  # number of hidden layers is variable and corresponds to tuple length
         "Batch size": 64,
         "Noise type": "OU",
-        "Noise std. dev.": 0.25  # std dev of zero-mean gaussian distributed noise
+        "Noise std. dev.": 0.3  # std dev of zero-mean gaussian distributed noise
     }
 
     # settings
-    # ENV_NAME = 'MountainCarContinuous-v0'
-    ENV_NAME = 'gym_examples:2DRobot-v0'
+    ENV_NAME = 'MountainCarContinuous-v0'
+    # ENV_NAME = 'gym_examples:2DRobot-v0'
     render_mode = 'human'  # options: None, 'human', 'rgb_array'
-    EVALUATE = True
+    EVALUATE = False
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
 
     # Create environment, agent and noise process
@@ -94,10 +94,6 @@ def DDPG():
             if done:
                 break
 
-        if EVALUATE:
-            # trajectory plotting
-            plot_agentTrajectory(time_steps, states, env, ENV_NAME, save=True)
-
         score_history.append(score)
         avg_score = np.mean(score_history[-ROLLING_WINDOW_SIZE_AVG_SCORE:])
         if avg_score > best_score:
@@ -105,6 +101,10 @@ def DDPG():
             if not EVALUATE:
                 agent.save_models()
                 print("models' parameters saved at episode: ", episode)
+
+        if EVALUATE:
+            # trajectory plotting
+            plot_agentTrajectory(time_steps, states, env, ENV_NAME, save=True)
 
         # plot_learningCurve(score_history, ROLLING_WINDOW_SIZE_AVG_SCORE, **HPARAMS)
         print("Completed in {} steps.... episode: {}/{}, episode reward: {},"

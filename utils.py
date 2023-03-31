@@ -108,7 +108,7 @@ def plot_agentTrajectory(time_steps, states, env, env_name, save=False):
         # save the plot of the learning curve
         filepath = os.path.join('tmp/trajectories', create_unique_filename(env_name) + '_traj.png')
         plt.savefig(filepath)
-        print("Saved learning curve plot")
+        print("Saved trajectory")
 
     plt.show()
 
