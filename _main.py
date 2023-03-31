@@ -9,26 +9,26 @@ from utils import plot_learningCurve, save_learningCurveData_to_csv, create_uniq
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 1,
+        "Episodes": 1000,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only (and no exploitation)
         "Critic learning rate": 0.002,
         "Actor learning rate": 0.001,
         "Discount factor": 0.99,
-        "Memory size": 1000000,
-        "Polyak averaging": 0.005,
-        "Critic layer sizes": (8, 8),  # number of hidden layers is variable and corresponds to tuple length
-        "Actor layer sizes": (8, 8),  # number of hidden layers is variable and corresponds to tuple length
-        "Batch size": 64,
-        "Noise type": "OU",
-        "Noise std. dev.": 0.3  # std dev of zero-mean gaussian distributed noise
+        "Memory size": 100000,
+        "Polyak averaging": 0.001,
+        "Critic layer sizes": (16, 16),  # number of hidden layers is variable and corresponds to tuple length
+        "Actor layer sizes": (16, 16),  # number of hidden layers is variable and corresponds to tuple length
+        "Batch size": 32,
+        "Noise type": "Gaussian",
+        "Noise std. dev.": 0.25  # std dev of zero-mean gaussian distributed noise
     }
 
     # settings
     ENV_NAME = 'MountainCarContinuous-v0'
     # ENV_NAME = 'gym_examples:2DRobot-v0'
-    render_mode = 'human'  # options: None, 'human', 'rgb_array'
-    EVALUATE = True
+    render_mode = None  # options: None, 'human', 'rgb_array'
+    EVALUATE = False
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
 
     # Create environment, agent and noise process

@@ -111,10 +111,9 @@ def plot_agentTrajectory(states, env, env_name, save=False):
         plt.title("The agent's trajectory in the environment %s" % env_name.split(':')[-1])
         plt.legend()
 
-    # Set environment variable to avoid multiple loading of a shared library
-    os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-
     if save:
+        # Set environment variable to avoid multiple loading of a shared library
+        os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
         # save the plot of the learning curve
         filepath = os.path.join('tmp/trajectories', create_unique_filename(env_name) + '_traj.png')
         plt.savefig(filepath)
