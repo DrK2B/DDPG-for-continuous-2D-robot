@@ -42,9 +42,15 @@ def plot_agentTrajectory(time_steps, states, env, env_name, save=False):
 
     # plotting
     if env_name == 'MountainCarContinuous-v0':
+        # plot environment boundaries
+        lb = [env.min_position for _ in range(len(time_steps))]
+        plt.plot(time_steps, lb, color='black', label='lower boundary')
+        ub = [env.max_position for _ in range(len(time_steps))]
+        plt.plot(time_steps, ub, color='black', label='upper boundary')
+
         # only consider first state component at plotting
         states = [states[0][i] for i in range(len(states[0]))]
-        plt.plot(time_steps, states, color='blue', label='trajectory')
+        plt.plot(time_steps, states, color='orange', label='trajectory')
 
         # plot target position
         target_pos = env.goal_position
