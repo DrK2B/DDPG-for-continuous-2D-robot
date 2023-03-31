@@ -36,11 +36,7 @@ def plot_learningCurve(scores, rolling_window_size=100, filename=None, **hyperpa
     plt.show()
 
 
-def plot_agentTrajectory(time_steps, states, env, env_name):
-    # ToDo: Implementation
-    # first step: plot trajectory of one evaluation episode (DONE)
-    # second step: plot several episode trajectory in the same plot
-
+def plot_agentTrajectory(time_steps, states, env, env_name, save=False):
     assert env_name in ('MountainCarContinuous-v0', 'gym_examples:2DRobot-v0'), \
         "plot_agentTrajectory: The specified environment does not exist."
 
@@ -65,8 +61,14 @@ def plot_agentTrajectory(time_steps, states, env, env_name):
         plt.title("The agent's trajectory in %s" % env_name)
         plt.legend(loc='upper left')
 
-        plt.show()
     else:  # 2D robot environment
+        # plot environment boundaries
+        bound_width = env.max_position - env.min_position
+        bound_height = bound_width
+        bound = plt.Rectangle((env.min_position, env.min_position), bound_width, bound_height,
+                              label='boundaries', linewidth=2, edgecolor='black', facecolor='none')
+        plt.gca().add_patch(bound)
+
         # plot start area
         start_width = env.start_area.high[0] - env.start_area.low[0]
         start_height = env.start_area.high[1] - env.start_area.low[1]
@@ -99,7 +101,16 @@ def plot_agentTrajectory(time_steps, states, env, env_name):
         plt.title("The agent's trajectory in the environment %s" % env_name.split(':')[-1])
         plt.legend()
 
-        plt.show()
+    # Set environment variable to avoid multiple loading of a shared library
+    os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+    if save:
+        # save the plot of the learning curve
+        filepath = os.path.join('tmp/trajectories', create_unique_filename(env_name) + '_traj.png')
+        plt.savefig(filepath)
+        print("Saved learning curve plot")
+
+    plt.show()
 
 
 def save_learningCurveData_to_csv(scores, filename):

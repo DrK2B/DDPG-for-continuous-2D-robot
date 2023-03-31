@@ -9,7 +9,7 @@ from utils import plot_learningCurve, save_learningCurveData_to_csv, create_uniq
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 1,
+        "Episodes": 3,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only (and no exploitation)
         "Critic learning rate": 0.002,
@@ -25,8 +25,8 @@ def DDPG():
     }
 
     # settings
-    ENV_NAME = 'MountainCarContinuous-v0'
-    # ENV_NAME = 'gym_examples:2DRobot-v0'
+    # ENV_NAME = 'MountainCarContinuous-v0'
+    ENV_NAME = 'gym_examples:2DRobot-v0'
     render_mode = 'human'  # options: None, 'human', 'rgb_array'
     EVALUATE = True
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
@@ -44,9 +44,6 @@ def DDPG():
 
     best_score = env.reward_range[0]  # initialize with worst reward value
     score_history = []
-    # lists for trajectory plotting
-    time_steps_episodes = []
-    states_episodes = []
 
     # start training or evaluation
     if EVALUATE:
@@ -99,10 +96,7 @@ def DDPG():
 
         if EVALUATE:
             # trajectory plotting
-            plot_agentTrajectory(time_steps, states, env, ENV_NAME)
-
-            time_steps_episodes.append(np.copy(time_steps))
-            states_episodes.append(np.copy(states))
+            plot_agentTrajectory(time_steps, states, env, ENV_NAME, save=True)
 
         score_history.append(score)
         avg_score = np.mean(score_history[-ROLLING_WINDOW_SIZE_AVG_SCORE:])
