@@ -68,7 +68,7 @@ def plot_agentTrajectory(states, env, env_name, save=False):
 
         plt.xlabel('time step')
         plt.ylabel("agent's position")
-        plt.title("The agent's trajectory in %s" % env_name)
+        plt.title("The agent's trajectory in the environment %s" % env_name)
         plt.legend(loc='upper left')
 
     else:  # 2D robot environment
