@@ -12,11 +12,11 @@ def DDPG():
         "Episodes": 1000,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only (and no exploitation)
-        "Critic learning rate": 0.001,
-        "Actor learning rate": 0.0001,
+        "Critic learning rate": 0.002,
+        "Actor learning rate": 0.001,
         "Discount factor": 0.99,
-        "Memory size": 1000000,
-        "Polyak averaging": 0.001,
+        "Memory size": 500000,
+        "Polyak averaging": 0.005,
         "Critic layer sizes": (8, 8),  # number of hidden layers is variable and corresponds to tuple length
         "Actor layer sizes": (8, 8),  # number of hidden layers is variable and corresponds to tuple length
         "Batch size": 64,
