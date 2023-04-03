@@ -15,13 +15,13 @@ def DDPG():
         "Critic learning rate": 0.002,
         "Actor learning rate": 0.001,
         "Discount factor": 0.99,
-        "Memory size": 500000,
+        "Memory size": 100000,
         "Polyak averaging": 0.005,
         "Critic layer sizes": (8, 8),  # number of hidden layers is variable and corresponds to tuple length
         "Actor layer sizes": (8, 8),  # number of hidden layers is variable and corresponds to tuple length
         "Batch size": 64,
         "Noise type": "OU",
-        "Noise std. dev.": 0.3  # std dev of zero-mean gaussian distributed noise
+        "Noise std. dev.": 0.2  # std dev of zero-mean gaussian distributed noise
     }
 
     # settings
@@ -102,7 +102,7 @@ def DDPG():
 
         if EVALUATE:
             # trajectory plotting
-            plot_agentTrajectory(states, env, ENV_NAME, save=True)
+            plot_agentTrajectory(states, env, ENV_NAME, save=False)
 
         # plot_learningCurve(score_history, ROLLING_WINDOW_SIZE_AVG_SCORE, **HPARAMS)
         print("Completed in {} steps.... episode: {}/{}, episode reward: {},"
