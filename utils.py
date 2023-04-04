@@ -146,3 +146,8 @@ def create_unique_filename(filename):
 
     filename = '_'.join((filename, timestamp))
     return filename
+
+
+def get_NN_output():
+    # ToDo: code a function which delivers the output of a neural network given an input
+    pass
