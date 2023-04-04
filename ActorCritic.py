@@ -11,10 +11,10 @@ class CriticNetwork(keras.Model):
         self.checkpoint_dir = chkpt_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir, self.model_name)
 
-        self.hidden_layers = [BatchNormalization()]     # apply batch normalization on inputs
+        self.hidden_layers = []
         for i in range(len(layer_sizes)):
             self.hidden_layers.append(Dense(layer_sizes[i], activation='relu'))
-            self.hidden_layers.append(BatchNormalization())     # apply batch normalization between layers
+            # self.hidden_layers.append(BatchNormalization())     # apply batch normalization between layers
         # output layer
         self.q = Dense(1)
 
@@ -37,10 +37,10 @@ class ActorNetwork(keras.Model):
         self.action_dim = action_dim
         self.action_bound = act_bound
 
-        self.hidden_layers = [BatchNormalization()]
+        self.hidden_layers = []
         for i in range(len(layer_sizes)):
             self.hidden_layers.append(Dense(layer_sizes[i], activation='relu'))
-            self.hidden_layers.append(BatchNormalization())
+            # self.hidden_layers.append(BatchNormalization())
         # output layer
         self.mu = Dense(self.action_dim, activation='tanh')
 
