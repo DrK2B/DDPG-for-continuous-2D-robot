@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import os
 import csv
 from datetime import datetime
+import tensorflow as tf
 
 
 def plot_learningCurve(scores, rolling_window_size=100, filename=None, **hyperparameters):
@@ -61,7 +62,7 @@ def plot_agentTrajectory(states, env, env_name, save=False):
         plt.plot(time_steps, [target_pos for _ in range(len(time_steps))], color='green', label='target')
 
         # details
-        t_min, t_max = 0, 500   # number of time steps
+        t_min, t_max = 0, 500  # number of time steps
         y_min, y_max = -1.5, 1.5
         plt.xlim([t_min - 1, t_max + 1])
         plt.ylim([y_min, y_max])
@@ -148,6 +149,11 @@ def create_unique_filename(filename):
     return filename
 
 
-def get_NN_output():
-    # ToDo: code a function which delivers the output of a neural network given an input
-    pass
+def get_NN_output(inputs, param_filepath):
+    # load the model from the h5 file
+    model = tf.keras.models.load_model(param_filepath)
+
+    # get the output of the loaded neural network for the given input
+    outputs = model.predict(inputs)
+
+    return outputs
