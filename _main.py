@@ -3,13 +3,13 @@ import numpy as np
 import tensorflow as tf
 from Agent import ddpgAgent
 from Noise import OUNoise, GaussianNoise
-from utils import plot_learningCurve, save_learningCurveData_to_csv, create_unique_filename, plot_agentTrajectory
+from utils import plot_learningCurve, save_learningCurveData_to_csv, create_unique_filename, plot_agentTrajectories
 
 
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 1000,
+        "Episodes": 5,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only (and no exploitation)
         "Critic learning rate": 0.002,
@@ -25,10 +25,10 @@ def DDPG():
     }
 
     # settings
-    ENV_NAME = 'MountainCarContinuous-v0'
-    # ENV_NAME = 'gym_examples:2DRobot-v0'
-    render_mode = None  # options: None, 'human', 'rgb_array'
-    EVALUATE = False
+    # ENV_NAME = 'MountainCarContinuous-v0'
+    ENV_NAME = 'gym_examples:2DRobot-v0'
+    render_mode = 'human'  # options: None, 'human', 'rgb_array'
+    EVALUATE = True
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
 
     # Create environment, agent and noise process
@@ -44,6 +44,7 @@ def DDPG():
 
     best_score = env.reward_range[0]  # initialize with worst reward value
     score_history = []
+    trajectories = []
 
     # start training or evaluation
     if EVALUATE:
@@ -57,6 +58,8 @@ def DDPG():
 
         agent.learn()
         agent.load_models()
+
+        # print(agent.actor(np.array([[5, 5]])))  # for Andrew
 
     for episode in range(1, HPARAMS["Episodes"] + 1):
         state = env.reset()[0]
@@ -101,8 +104,9 @@ def DDPG():
                 print("models' parameters saved at episode: ", episode)
 
         if EVALUATE:
-            # trajectory plotting
-            plot_agentTrajectory(states, env, ENV_NAME, save=False)
+            trajectories.append(states.copy())
+            # plot agent trajectory
+            # plot_agentTrajectory(states, env, ENV_NAME, save=False)
 
         # plot_learningCurve(score_history, ROLLING_WINDOW_SIZE_AVG_SCORE, **HPARAMS)
         print("Completed in {} steps.... episode: {}/{}, episode reward: {},"
@@ -117,8 +121,8 @@ def DDPG():
         save_learningCurveData_to_csv(score_history, filename)
         plot_learningCurve(score_history, ROLLING_WINDOW_SIZE_AVG_SCORE, filename=filename, **HPARAMS)
     else:
-        # plot trajectories of all episodes
-        pass
+        # plot agent trajectories of all episodes
+        plot_agentTrajectories(trajectories, env, ENV_NAME, save=False)
 
     print('--- Finished DDPG ---')
 

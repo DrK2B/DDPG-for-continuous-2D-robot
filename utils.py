@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import os
 import csv
 from datetime import datetime
-import tensorflow as tf
 
 
 def plot_learningCurve(scores, rolling_window_size=100, filename=None, **hyperparameters):
@@ -123,6 +122,94 @@ def plot_agentTrajectory(states, env, env_name, save=False):
     plt.show()
 
 
+def plot_agentTrajectories(trajectories, env, env_name, save=False):
+    assert env_name in ('MountainCarContinuous-v0', 'gym_examples:2DRobot-v0'), \
+        "plot_agentTrajectories: The specified environment does not exist."
+
+    # plotting
+    if env_name == 'MountainCarContinuous-v0':
+        time_steps = [t for t in range(501)]
+
+        # plot environment boundaries
+        lb = [env.min_position for _ in range(len(time_steps))]
+        plt.plot(time_steps, lb, color='black', label='lower boundary')
+        ub = [env.max_position for _ in range(len(time_steps))]
+        plt.plot(time_steps, ub, color='black', label='upper boundary')
+
+        # plot target position
+        target_pos = env.goal_position
+        plt.plot(time_steps, [target_pos for _ in range(len(time_steps))], color='green', label='target')
+
+        # only consider first state component at plotting
+        for idx, states in enumerate(trajectories):
+            states = [states[0][i] for i in range(len(states[0]))]
+            while states and states[-1] == 0:
+                states.pop()
+            plt.plot([t for t in range(len(states))], states, label='trajectory '+str(idx+1))
+
+        # details
+        t_min, t_max = 0, 500  # number of time steps
+        y_min, y_max = -1.5, 1.5
+        plt.xlim([t_min - 1, t_max + 1])
+        plt.ylim([y_min, y_max])
+
+        plt.xlabel('time step')
+        plt.ylabel("agent's position")
+        plt.title("The agent's trajectory in the environment %s" % env_name)
+        plt.legend(loc='upper left')
+
+    else:  # 2D robot environment
+        # plot environment boundaries
+        bound_width = env.max_position - env.min_position
+        bound_height = bound_width
+        bound = plt.Rectangle((env.min_position, env.min_position), bound_width, bound_height,
+                              label='boundaries', linewidth=2, edgecolor='black', facecolor='none')
+        plt.gca().add_patch(bound)
+
+        # plot start area
+        start_width = env.start_area.high[0] - env.start_area.low[0]
+        start_height = env.start_area.high[1] - env.start_area.low[1]
+        start = plt.Rectangle((env.start_area.low[0], env.start_area.low[1]), start_width, start_height,
+                              label='start area', linewidth=2, edgecolor='b', facecolor='none')
+        plt.gca().add_patch(start)
+
+        # plot target area
+        target_width = env.target_area.high[0] - env.target_area.low[0]
+        target_height = env.target_area.high[1] - env.target_area.low[1]
+        target = plt.Rectangle((env.target_area.low[0], env.target_area.low[1]), target_width, target_height,
+                               label='target area', linewidth=2, edgecolor='g', facecolor='none')
+        plt.gca().add_patch(target)
+
+        # plot s2 over s1
+        for idx, states in enumerate(trajectories):
+            x_states = states[0]
+            y_states = states[1]
+            x_states_trimmed = np.trim_zeros(x_states)  # remove trailing zeros
+            y_states_trimmed = np.trim_zeros(y_states)  # remove trailing zeros
+            plt.scatter(x_states_trimmed, y_states_trimmed, label='trajectory '+str(idx+1), marker='.')
+
+        # plot details
+        x_min, x_max = env.min_position, env.max_position
+        y_min, y_max = env.min_position, env.max_position
+        plt.xlim([x_min - 1, x_max + 1])
+        plt.ylim([y_min - 1, y_max + 1])
+
+        plt.xlabel("agent's x position")
+        plt.ylabel("agent's y position")
+        plt.title("The agent's trajectory in the environment %s" % env_name.split(':')[-1])
+        plt.legend()
+
+    if save:
+        # Set environment variable to avoid multiple loading of a shared library
+        os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+        # save the plot of the learning curve
+        filepath = os.path.join('tmp/trajectories', create_unique_filename(env_name) + '_traj.png')
+        plt.savefig(filepath)
+        print("Saved trajectory")
+
+    plt.show()
+
+
 def save_learningCurveData_to_csv(scores, filename):
     filepath = os.path.join('tmp/figures', filename + '_plot_data.csv')
     with open(filepath, 'w', newline='') as file:
@@ -147,13 +234,3 @@ def create_unique_filename(filename):
 
     filename = '_'.join((filename, timestamp))
     return filename
-
-
-def get_NN_output(inputs, param_filepath):
-    # load the model from the h5 file
-    model = tf.keras.models.load_model(param_filepath)
-
-    # get the output of the loaded neural network for the given input
-    outputs = model.predict(inputs)
-
-    return outputs
