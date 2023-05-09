@@ -48,6 +48,8 @@ def DDPG():
 
     # start training or evaluation
     if EVALUATE:
+        # OLD VERSION
+        '''
         # model weights cannot be directly load into an empty new model; hence, it is necessary to initialize the
         # model parameters by learning from randomly generated state transitions
         for _ in range(agent.batch_size):
@@ -57,6 +59,10 @@ def DDPG():
             agent.remember(state, action, reward, new_state, done)
 
         agent.learn()
+        agent.load_models()
+        '''
+
+        # NEW VERSION
         agent.load_models()
 
         # print(agent.actor(np.array([[5, 5]])))  # for Andrew
