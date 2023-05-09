@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import os
 import csv
 from datetime import datetime
+from ActorCritic import ActorNetwork
+from keras.optimizers import Adam
 
 
 def plot_learningCurve(scores, rolling_window_size=100, filename=None, **hyperparameters):
@@ -145,7 +147,7 @@ def plot_agentTrajectories(trajectories, env, env_name, save=False):
             states = [states[0][i] for i in range(len(states[0]))]
             while states and states[-1] == 0:
                 states.pop()
-            plt.plot([t for t in range(len(states))], states, label='trajectory '+str(idx+1))
+            plt.plot([t for t in range(len(states))], states, label='trajectory ' + str(idx + 1))
 
         # details
         t_min, t_max = 0, 500  # number of time steps
@@ -186,7 +188,7 @@ def plot_agentTrajectories(trajectories, env, env_name, save=False):
             y_states = states[1]
             x_states_trimmed = np.trim_zeros(x_states)  # remove trailing zeros
             y_states_trimmed = np.trim_zeros(y_states)  # remove trailing zeros
-            plt.scatter(x_states_trimmed, y_states_trimmed, label='trajectory '+str(idx+1), marker='.')
+            plt.scatter(x_states_trimmed, y_states_trimmed, label='trajectory ' + str(idx + 1), marker='.')
 
         # plot details
         x_min, x_max = env.min_position, env.max_position
@@ -234,3 +236,22 @@ def create_unique_filename(filename):
 
     filename = '_'.join((filename, timestamp))
     return filename
+
+
+def feedForward_Actor(input_val, filename: str, layer_sizes, env):
+    """
+    feedforward of actor network which results in output value
+    :param input_val: input values as list
+    :param filename: name of the HDF5 file in which the model parameters are saved
+    :param layer_sizes: layer sizes of the actor network
+    :param env: environment in which the actor network is deployed
+    :return: output values of actor network
+    """
+
+    actor = ActorNetwork(layer_sizes=layer_sizes, action_dim=env.action_space.shape[0],
+                         act_bound=np.max(np.abs([env.action_space.low[0], env.action_space.high[0]])), name='actor_01')
+    # necessary to prevent this error: unable to load weights saved in HDF5 format into a subclassed Model
+    # which has not created its variables yet
+    _ = actor(np.array([input_val]))
+    actor.load_weights(filename)
+    return actor(np.array([input_val])).numpy()

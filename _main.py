@@ -5,11 +5,13 @@ from Agent import ddpgAgent
 from Noise import OUNoise, GaussianNoise
 from utils import plot_learningCurve, save_learningCurveData_to_csv, create_unique_filename, plot_agentTrajectories
 
+from utils import feedForward_Actor
+
 
 def DDPG():
     # Hyperparameters
     HPARAMS = {
-        "Episodes": 5,
+        "Episodes": 1000,
         "Time steps": 500,
         "Explorations": 0,  # number of episodes with (random) exploration only (and no exploitation)
         "Critic learning rate": 0.002,
@@ -25,10 +27,10 @@ def DDPG():
     }
 
     # settings
-    # ENV_NAME = 'MountainCarContinuous-v0'
-    ENV_NAME = 'gym_examples:2DRobot-v0'
-    render_mode = 'human'  # options: None, 'human', 'rgb_array'
-    EVALUATE = True
+    ENV_NAME = 'MountainCarContinuous-v0'
+    # ENV_NAME = 'gym_examples:2DRobot-v0'
+    render_mode = None  # options: None, 'human', 'rgb_array'
+    EVALUATE = False
     ROLLING_WINDOW_SIZE_AVG_SCORE = 100  # size of the rolling window for averaging the episode scores
 
     # Create environment, agent and noise process
@@ -48,8 +50,6 @@ def DDPG():
 
     # start training or evaluation
     if EVALUATE:
-        # OLD VERSION
-        '''
         # model weights cannot be directly load into an empty new model; hence, it is necessary to initialize the
         # model parameters by learning from randomly generated state transitions
         for _ in range(agent.batch_size):
@@ -59,10 +59,6 @@ def DDPG():
             agent.remember(state, action, reward, new_state, done)
 
         agent.learn()
-        agent.load_models()
-        '''
-
-        # NEW VERSION
         agent.load_models()
 
         # print(agent.actor(np.array([[5, 5]])))  # for Andrew
@@ -135,3 +131,6 @@ def DDPG():
 
 if __name__ == '__main__':
     DDPG()
+
+    # envi = gym.make('MountainCarContinuous-v0', render_mode=None)
+    # print(feedForward_Actor([-0.1, -0.05], "tmp/models/actor_MountainCarContinuous-v0_ddpg.h5", (8, 8), envi))
